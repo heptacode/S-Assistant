@@ -1,0 +1,17 @@
+AddHandler default-handler .htm .html .shtml
+AddHandler php-fastcgi .php
+AddType text/html .php
+Action php-fastcgi /php56-fpm-handler.fcgi
+
+RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /submit/
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
