@@ -51,18 +51,19 @@ $(function (){
     $('#create-checkbox-unlimited').is(':checked') ? $('.form-row-create-deadline').css('display', 'none') : $('.form-row-create-deadline').css('display', 'flex');
     $('.modal-create').addClass('active');
     $('.modal-create-content').addClass('slideUp').removeClass('slideDown');
-    setTimeout(function(){$('.modal-tab').addClass('modal-tab-active')}, 600);
+    setTimeout(function(){$('.modal-tab-create').addClass('modal-tab-active')}, 600);
     codeset("create");
   })
   $('.btn-modal-copied-close').click(function(){
     $('.modal-copied').removeClass('active');
   })
   $('.btn-modal-create-close').click(function(){
-    $('.modal-tab').removeClass('modal-tab-active');
+    $('.modal-tab-create').removeClass('modal-tab-active');
     $('.modal-create').removeClass('active');
     $('.modal-create-content').addClass('slideDown').removeClass('slideUp');
   })
   $('.btn-modal-modify-close').click(function(){
+    $('.modal-tab-modify').removeClass('modal-tab-active');
     $('.modal-modify').removeClass('active');
     $('.modal-modify-content').addClass('slideDown').removeClass('slideUp');
   })
@@ -73,28 +74,50 @@ $(function (){
     $('#modify-checkbox-unlimited').is(':checked') ? $('.form-row-modify-deadline').fadeOut() : $('.form-row-modify-deadline').fadeIn().css('display', 'flex');
   })
   $('.btn-create-save').click(function(){
-    !$('#create-label').val() || $('#create-label').val() == ' ' || $('#create-label').val().length <= 1 ? $('.create-label-label').css('color', 'red').addClass('shake') : $('.create-label-label').css('color', 'black').removeClass('shake');
-    !$('#create-max').val() || $('#create-max').val() == ' ' || $('#create-max').val().length <= 1 ? $('.create-label-max').css('color', 'red').addClass('shake') : $('.create-label-max').css('color', 'black').removeClass('shake');
-    !$('#create-checkbox-postNow').is(':checked') ? (!$('#create-post-date').val() || $('#create-post-date').val().length != 10 || !$('#create-post-time').val() ? $('.create-label-post').css('color', 'red').addClass('shake') : $('.create-label-post').css('color', 'black').removeClass('shake')) : $('.create-label-post').css('color', 'black').removeClass('shake');
-    !$('#create-checkbox-unlimited').is(':checked') ? (!$('#create-deadline-date').val() || $('#create-deadline-date').val().length != 10 || !$('#create-deadline-time').val() ? $('.create-label-deadline').css('color', 'red').addClass('shake') : $('.create-label-deadline').css('color', 'black').removeClass('shake')) : $('.create-label-deadline').css('color', 'black').removeClass('shake');
-    setTimeout(function(){
-      $('.create-label-label').removeClass('shake');
-      $('.create-label-max').removeClass('shake');
-      $('.create-label-post').removeClass('shake');
-      $('.create-label-deadline').removeClass('shake');
-    },850);
+    var valid = true;
+    !$('#create-label').val() || $('#create-label').val() == ' '? (valid = false, $('.create-label-label').css('color', 'red').addClass('shake'), setTimeout(function(){$('.create-label-label').removeClass('shake')}, 800)) : $('.create-label-label').css('color', 'black').removeClass('shake');
+    !$('#create-max').val() || $('#create-max').val() == ' ' || $('#create-max').val() <= 0 ? (valid = false, $('.create-label-max').css('color', 'red').addClass('shake'), setTimeout(function(){$('.create-label-max').removeClass('shake')}, 800)) : $('.create-label-max').css('color', 'black').removeClass('shake');
+    !$('#create-checkbox-postNow').is(':checked') ? (!$('#create-post-date').val() || $('#create-post-date').val().length != 10 || !$('#create-post-time').val() ? (valid = false, $('.create-label-post').css('color', 'red').addClass('shake'), setTimeout(function(){$('.create-label-post').removeClass('shake')}, 800)) : $('.create-label-post').css('color', 'black').removeClass('shake')) : $('.create-label-post').css('color', 'black').removeClass('shake');
+    !$('#create-checkbox-unlimited').is(':checked') ? (!$('#create-deadline-date').val() || $('#create-deadline-date').val().length != 10 || !$('#create-deadline-time').val() ? (valid = false, $('.create-label-deadline').css('color', 'red').addClass('shake'), setTimeout(function(){$('.create-label-deadline').removeClass('shake')}, 800)) : $('.create-label-deadline').css('color', 'black').removeClass('shake')) : $('.create-label-deadline').css('color', 'black').removeClass('shake');
+    valid ? $.post('proxy.php',{
+      create:1,
+      label:$('#create-label').val(),
+      maxval:$('#create-max').val(),
+      postNow:$('#create-checkbox-postNow').prop('checked') ? 1 : 0,
+      postDate:$('#create-post-date').val(),
+      postTime:$('#create-post-time').val(),
+      unlimitedval:$('#create-checkbox-unlimited').prop('checked') ? 1 : 0,
+      deadlineDate:$('#create-deadline-date').val(),
+      deadlineTime:$('#create-deadline-time').val(),
+      afterDeadline:$('#create-checkbox-afterDeadline').prop('checked') ? 1 : 0,
+      useFb:$('#create-checkbox-useFb').prop('checked') ? 1 : 0,
+      codelvl:$('#create-slider-codelvl').val(),
+      code:$('#create-code').val(),
+      id:$('#fbId').val()
+    },function(data){parseInt(data) ? ($('.modal-tab-create').removeClass('modal-tab-active'), $('.modal-create').removeClass('active'), $('.modal-create-content').addClass('slideDown').removeClass('slideUp'), $('.modal-form-create').trigger('reset')) : alert('데이터 입력에 실패하였습니다.\n일시적인 네트워크 오류일 수 있으므로 잠시 후에 다시 시도하십시오.')}) : exit;
   })
   $('.btn-modify-save').click(function(){
-    !$('#modify-label').val() || $('#modify-label').val() == ' ' || $('#modify-label').val().length <= 1 ? $('.modify-label-label').css('color', 'red').addClass('shake') : $('.modify-label-label').css('color', 'black').removeClass('shake');
-    !$('#modify-max').val() || $('#modify-max').val() == ' ' || $('#modify-max').val().length <= 1 ? $('.modify-label-max').css('color', 'red').addClass('shake') : $('.modify-label-max').css('color', 'black').removeClass('shake');
-    !$('#modify-checkbox-postNow').is(':checked') ? (!$('#modify-post-date').val() || $('#modify-post-date').val().length != 10 || !$('#modify-post-time').val() ? $('.modify-label-post').css('color', 'red').addClass('shake') : $('.modify-label-post').css('color', 'black').removeClass('shake')) : $('.modify-label-post').css('color', 'black').removeClass('shake');
-    !$('#modify-checkbox-unlimited').is(':checked') ? (!$('#modify-deadline-date').val() || $('#modify-deadline-date').val().length != 10 || !$('#modify-deadline-time').val() ? $('.modify-label-deadline').css('color', 'red').addClass('shake') : $('.modify-label-deadline').css('color', 'black').removeClass('shake')) : $('.modify-label-deadline').css('color', 'black').removeClass('shake');
-    setTimeout(function(){
-      $('.modify-label-label').removeClass('shake');
-      $('.modify-label-max').removeClass('shake');
-      $('.modify-label-post').removeClass('shake');
-      $('.modify-label-deadline').removeClass('shake');
-    },850);
+    var valid = true;
+    !$('#modify-label').val() || $('#modify-label').val() == ' ' ? (valid = false, $('.modify-label-label').css('color', 'red').addClass('shake'), setTimeout(function(){$('.modify-label-label').removeClass('shake')},800)) : $('.modify-label-label').css('color', 'black').removeClass('shake');
+    !$('#modify-max').val() || $('#modify-max').val() == ' ' || $('#modify-max').val() <= 0 ? (valid = false, $('.modify-label-max').css('color', 'red').addClass('shake'), setTimeout(function(){$('.modify-label-max').removeClass('shake')},800)) : $('.modify-label-max').css('color', 'black').removeClass('shake');
+    !$('#modify-checkbox-postNow').is(':checked') ? (!$('#modify-post-date').val() || $('#modify-post-date').val().length != 10 || !$('#modify-post-time').val() ? (valid = false, $('.modify-label-post').css('color', 'red').addClass('shake'), setTimeout(function(){$('.modify-label-post').removeClass('shake')},800)) : $('.modify-label-post').css('color', 'black').removeClass('shake')) : $('.modify-label-post').css('color', 'black').removeClass('shake');
+    !$('#modify-checkbox-unlimited').is(':checked') ? (!$('#modify-deadline-date').val() || $('#modify-deadline-date').val().length != 10 || !$('#modify-deadline-time').val() ? (valid = false, $('.modify-label-deadline').css('color', 'red').addClass('shake'), setTimeout(function(){$('.modify-label-deadline').removeClass('shake')},800)) : $('.modify-label-deadline').css('color', 'black').removeClass('shake')) : $('.modify-label-deadline').css('color', 'black').removeClass('shake');
+    valid ? $.post('proxy.php',{
+      modify:1,
+      label:$('#modify-label').val(),
+      max:$('#modify-max').val(),
+      postNow:$('#modify-checkbox-postNow').prop('checked'),
+      postDate:$('#modify-post-date').val(),
+      postTime:$('#modify-post-time').val(),
+      unlimited:$('#modify-checkbox-unlimited').prop('checked'),
+      deadlineDate:$('#modify-deadline-date').val(),
+      deadlineTime:$('#modify-deadline-time').val(),
+      afterDeadline:$('#modify-checkbox-afterDeadline').prop('checked'),
+      useFb:$('#modify-checkbox-useFb').prop('checked'),
+      codelvl:$('#modify-slider-codelvl').val(),
+      code:$('#modify-code').val(),
+      id:$('#fbId').val()
+    },function(data){parseInt(data) ? ($('.modal-tab-modify').removeClass('modal-tab-active'), $('.modal-modify').removeClass('active'), $('.modal-modify-content').addClass('slideDown').removeClass('slideUp'), $('.modal-form-modify').trigger('reset')) : alert('데이터 입력에 실패하였습니다.\n일시적인 네트워크 오류일 수 있으므로 잠시 후에 다시 시도하십시오.')}) : exit;
   })
   $('.create-code-reissue').click(function(){
     codeset("create");
@@ -123,23 +146,19 @@ var code_random = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz012345678
 function codeset(mode){
   if(mode == "create"){
     $('.create-load-code').fadeIn();
-    $('.create-preview-code').fadeOut();
+    $('.create-preview-code').css('display', 'none');
     code = '';
     for (var i = 0; i < $('#create-slider-codelvl').val(); i++)
       code += code_random.charAt(Math.floor(Math.random() * code_random.length));
     $.post('proxy.php',{codeset:1,code:code},function(data){
-      if(parseInt(data)) exit;
-      else{
-        $('#create-code').val(code);
-        $('.create-preview-code').val(code);
-      }
+      parseInt(data) ? exit : ($('#create-code').val(code), $('.create-preview-code').val(code))
     })
     $('.create-load-code').fadeOut();
-    $('.create-preview-code').fadeIn();
+    $('.create-preview-code').css('display', 'block');
   }
   else if(mode == "modify"){
     $('.modify-load-code').fadeIn();
-    $('.modify-preview-code').fadeOut();
+    $('.modify-preview-code').css('display', 'none');
     code = '';
     for (var i = 0; i < $('#modify-slider-codelvl').val(); i++)
       code += code_random.charAt(Math.floor(Math.random() * code_random.length));
@@ -151,7 +170,7 @@ function codeset(mode){
       }
     })
     $('.modify-load-code').fadeOut();
-    $('.modify-preview-code').fadeIn();
+    $('.modify-preview-code').css('display', 'block');
   }
 }
 function modify(label, max, postNow, postDate, postTime, unlimited, deadlineDate, deadlineTime, afterDeadline, useFb, codelvl, code){
@@ -174,6 +193,7 @@ function modify(label, max, postNow, postDate, postTime, unlimited, deadlineDate
   $('#modify-code').val(code);
   $('.modal-modify').addClass('active');
   $('.modal-modify-content').addClass('slideUp').removeClass('slideDown');
+  setTimeout(function(){$('.modal-tab-modify').addClass('modal-tab-active')}, 600);
 }
 function statusChangeCallback(response) {
   if (response.status === 'connected') {
@@ -242,12 +262,13 @@ function copy(val){
   document.body.removeChild(t);
   $('.modal-copied').addClass('active');
 }
+cs_table($('#fbId').val());
 function cs_table(id){
-  $('.btn-create').css('display', 'block');
-  $.post('proxy.php',{console:1,id:id},function(data){$('.console-table').html(data)});
-  setTimeout(function(){cs_table(id)},6000000);
+  $.post('proxy.php',{console:1, id:id},function(data){$('.console-table').html(data)});
+  setTimeout(function(){cs_table(id)},1000);
 }
 $(window).load(function(){
+  $('.btn-create').css('display', 'block');
   $('#content').removeClass('hidden');
   $('.loader-wrap').fadeOut('slow');
   $('.loader').fadeOut('slow');

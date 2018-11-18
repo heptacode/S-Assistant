@@ -47,7 +47,8 @@ $dir3 = $dir1.$submitter."_".$_SESSION['date2']."_[".$ip."]";*/
   <link rel="stylesheet" href="assets/style.css?v2">
   <script src="https://cdn.hyunwoo.org/js/jquery.min.js"></script>
   <script src="https://cdn.hyunwoo.org/js/jquery-ui.min.js"></script>
-  <script src="assets/javascript.js?v2"></script>
+  <input id="fbId" type="hidden" value="<?echo $_SESSION['id']?>" />
+  <script src="assets/javascript.js?v3"></script>
   <script src="https://cdn.hyunwoo.org/js/disable.js"></script>
   <div id="fb-root"></div>
 </head>
@@ -114,8 +115,8 @@ $dir3 = $dir1.$submitter."_".$_SESSION['date2']."_[".$ip."]";*/
       <section class="modal">
         <div class="modal-create">
           <div class="modal-content modal-create-content">
-            <div class="modal-tab"><button class="btn-modal-close btn-modal-create-close" type="button"></button><div class="modal-title">새로운 폼 생성</div><div class="modal-subtitle">S-Assistant</div><div class="btn-save btn-create-save">만들기</div></div>
-            <form class="modal-form" method="post">
+            <div class="modal-tab modal-tab-create"><button class="btn-modal-close btn-modal-create-close" type="button"></button><div class="modal-title">새로운 폼 생성</div><div class="modal-subtitle">S-Assistant</div><div class="btn-save btn-create-save">만들기</div></div>
+            <form class="modal-form modal-form-create" method="post">
               <section><small>기본 설정</small>
                 <div class="form-row-1st"></div>
                 <div class="form-row">
@@ -138,8 +139,8 @@ $dir3 = $dir1.$submitter."_".$_SESSION['date2']."_[".$ip."]";*/
                 <div class="form-row form-row-reserve form-row-create-post">
                   <label class="create-label-post" for="create-post-date">예약 게시</label>
                   <div class="datetime-container">
-                    <input type="text" id="create-post-date" class="datepicker" readonly />
-                    <input type="time" id="create-post-time" value="00:00" min="00:00" max="23:59" />
+                    <input type="text" id="create-post-date" class="datepicker"value="0000-00-00"  readonly />
+                    <input type="time" id="create-post-time" value="00:00" />
                   </div>
                 </div>
                 <div class="form-row">
@@ -154,8 +155,8 @@ $dir3 = $dir1.$submitter."_".$_SESSION['date2']."_[".$ip."]";*/
                 <div class="form-row form-row-reserve form-row-create-deadline">
                   <label class="create-label-deadline" for="create-deadline-date">마감</label>
                   <div class="datetime-container">
-                    <input type="text" id="create-deadline-date" class="datepicker" readonly />
-                    <input type="time" id="create-deadline-time" value="00:00" min="00:00" max="23:59" />
+                    <input type="text" id="create-deadline-date" class="datepicker"value="0000-00-00"  readonly />
+                    <input type="time" id="create-deadline-time" value="00:00" />
                   </div>
                 </div>
                 <div class="form-row">
@@ -199,8 +200,8 @@ $dir3 = $dir1.$submitter."_".$_SESSION['date2']."_[".$ip."]";*/
         </div>
         <div class="modal-modify">
           <div class="modal-content modal-modify-content">
-          <div class="modal-tab"><button class="btn-modal-close btn-modal-modify-close" type="button"></button><div class="modal-title">폼 관리</div><div class="modal-subtitle">S-Assistant</div><div class="btn-save btn-modify-save">저장</div></div>
-            <form class="modal-form" method="post">
+          <div class="modal-tab modal-tab-modify"><button class="btn-modal-close btn-modal-modify-close" type="button"></button><div class="modal-title">폼 관리</div><div class="modal-subtitle">S-Assistant</div><div class="btn-save btn-modify-save">저장</div></div>
+            <form class="modal-form modal-form-modify" method="post">
               <section><small>기본 설정</small>
                 <div class="form-row-1st"></div>
                 <div class="form-row">
@@ -224,7 +225,7 @@ $dir3 = $dir1.$submitter."_".$_SESSION['date2']."_[".$ip."]";*/
                   <label class="modify-label-post" for="modify-post-date">예약 게시</label>
                   <div class="datetime-container">
                     <input type="text" id="modify-post-date" class="datepicker" readonly />
-                    <input type="time" id="modify-post-time" min="00:00" max="23:59" />
+                    <input type="time" id="modify-post-time" value="00:00" />
                   </div>
                 </div>
                 <div class="form-row">
@@ -240,7 +241,7 @@ $dir3 = $dir1.$submitter."_".$_SESSION['date2']."_[".$ip."]";*/
                   <label class="modify-label-deadline" for="modify-deadline-date">마감</label>
                   <div class="datetime-container">
                     <input type="text" id="modify-deadline-date" class="datepicker" readonly />
-                    <input type="time" id="modify-deadline-time" min="00:00" max="23:59" />
+                    <input type="time" id="modify-deadline-time" value="00:00" />
                   </div>
                 </div>
                 <div class="form-row">
@@ -308,4 +309,3 @@ if(!(isset($submitter)))echo'<script>f(0)</script>';
 elseif(isset($_GET['d']) || isset($_GET['v']))echo'<script>setTimeout(function(){ location.reload(); }, 5000);</script>';
 else echo'<script>f(1)</script>';*/
 ?>
-<script>cs_table(<?echo $_SESSION['id']?>)</script>
