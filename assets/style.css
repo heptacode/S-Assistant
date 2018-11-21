@@ -163,16 +163,23 @@ header {
   justify-content: center;
 }
 .pf-container {
+  display: block;
+  background: transparent;
+  box-shadow: 0 1px 3px rgba(0,0,0,.4);
+  margin-top: .4rem;
+  border-radius: 5px;
+}
+.pf-container-valid {
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(0,0,0,.2);
-  box-shadow: 0 1px 3px rgba(0,0,0,.4);
-  border-radius: 1rem;
-  margin-top: .4rem;
   padding-right: .6rem;
+  border-radius: 1rem;
 }
 .pf-icon {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
 }
 .pf-name {
@@ -190,6 +197,9 @@ header {
 }
 .site-info {
   color: rgba(0,0,0,.5);
+}
+.console-container {
+  display: none;
 }
 .console-container > .active {
   background: rgba(0,0,0,.05);
@@ -234,6 +244,7 @@ button {
   color: #0056b3;
 }
 .btn-modify {
+  margin-top: 5px;
   padding: .2rem .6rem;
   color: white;
   font-size: 15px;
@@ -456,6 +467,7 @@ input:focus ~ .bar:before, input:focus ~ .bar:after {
   width: 50%;
 }
 .btn-restore {
+  display: none;
   position: absolute;
   top: 1.5px;
   left: 100px;
@@ -484,7 +496,7 @@ input:focus ~ .bar:before, input:focus ~ .bar:after {
   position: relative;
   top: 2px;
 }
-.btn-next {
+.btn-signIn {
   display: inline-block;
   margin-top: 0;
   margin-bottom: 2rem;
@@ -494,10 +506,10 @@ input:focus ~ .bar:before, input:focus ~ .bar:after {
   color: white;
   font-size: 1rem;
   background:#5295ea;
-  background: -moz-linear-gradient(left, #5295ea 0%, #8b79db 100%);
   background: -webkit-linear-gradient(left, #5295ea 0%, #8b79db 100%);
-  background: -o-linear-gradient(left, #5295ea 0%, #8b79db 100%);
+  background: -moz-linear-gradient(left, #5295ea 0%, #8b79db 100%);
   background: -ms-linear-gradient(left, #5295ea 0%, #8b79db 100%);
+  background: -o-linear-gradient(left, #5295ea 0%, #8b79db 100%);
   background: linear-gradient(to right, #5295ea 0%, #8b79db 100%);
   border: .5px solid white;
   border-radius: 5px;
@@ -507,7 +519,7 @@ input:focus ~ .bar:before, input:focus ~ .bar:after {
   -o-transition-duration: .2s;
   transition-duration: .2s;
 }
-.btn-next:hover {
+.btn-signIn:hover {
   color: rgba(255,255,255,.5);
 }
 .modal .active {
@@ -685,7 +697,7 @@ input:focus ~ .bar:before, input:focus ~ .bar:after {
 }
 .btn-save {
   position: absolute;
-  top: .25rem;
+  top: .2rem;
   right: .4rem;
   border: 0;
   padding: 10px;
@@ -697,6 +709,11 @@ input:focus ~ .bar:before, input:focus ~ .bar:after {
 }
 .btn-save:hover {
   color: rgb(41, 104, 206);
+}
+.btn-save-disabled {
+  color: rgb(173, 174, 177);
+  pointer-events: none;
+  cursor: not-allowed;
 }
 .modal-form > section {
   margin-top: 1.5rem;
@@ -752,21 +769,30 @@ input:focus ~ .bar:before, input:focus ~ .bar:after {
   position: absolute;
   right: 15px;
 }
-.code-reissue {
-  margin: 30px 0;
-  background: #FEFEFF;
+.code-reissue, .form-remove {
+  display: block;
+  border: 0;
+  width: 100%;
+  margin: 35px 0;
   padding: 10px 0;
-  color: red;
+  font-size: 1rem;
+  background: rgb(254, 254, 255);
   cursor: pointer;
+  color: red;
   -webkit-tap-highlight-color: transparent;
   -webkit-transition-duration: .3s;
   -moz-transition-duration: .3s;
   -o-transition-duration: .3s;
   transition-duration: .3s;
 }
-.code-reissue:active {
+.code-reissue:active, .form-remove:active {
   background: rgb(216, 216, 218);
   color: rgb(189, 9, 9);
+}
+.code-reissue-disabled, .form-remove-disabled {
+  pointer-events: none;
+  cursor: not-allowed;
+  color: rgb(128, 125, 125);
 }
 .form-row > label {
   display: block;
@@ -822,11 +848,6 @@ input:focus ~ .bar:before, input:focus ~ .bar:after {
 }
 .form-row-reserve {
   display: none;
-}
-.form-row-modify-codelvl-disabled {
-  opacity: .5;
-  pointer-events: none;
-  cursor: not-allowed;
 }
 .input-slider {
   -webkit-appearance: none;
