@@ -12,8 +12,9 @@ $.datepicker.setDefaults({
     showMonthAfterYear: true
 });
 var server = "https://submit.hyunwoo.org/",
-    modifyCode;
-
+    modifyCode,
+    timer_cs,
+    timer_explorer;
 $(function() {
     $(".datepicker").datepicker();
     $(".btn-close").click(function() {
@@ -28,6 +29,20 @@ $(function() {
     });
     $(".btn-signIn").click(function() {
         signIn();
+    });
+    $(".btn-explorer").click(function() {
+        clearTimeout(timer_cs);
+        $(".field").slideUp();
+        $(".explorer").fadeIn("slow");
+        Cookies.set("root", true, { expires: 1, secure: true });
+        Cookies.set("dir", "./submit/" + Cookies.get("fbId") + "/", { expires: 1, secure: true });
+        explorer();
+    });
+    $(".btn-console").click(function() {
+        clearTimeout(timer_explorer);
+        $(".field").slideDown();
+        $(".explorer").fadeOut();
+        cs();
     });
     $(".btn-create").hover(function() {
         $(".create-container").addClass("active");
@@ -162,7 +177,7 @@ $(function() {
                       afterDeadline: $("#create-checkbox-afterDeadline").prop("checked") ? 1 : 0,
                       useFb: $("#create-checkbox-useFb").prop("checked") ? 1 : 0,
                       code: $("#create-code").val(),
-                      id: $("#fbId").val()
+                      fbId: Cookies.get("fbId")
                   },
                   function(data) {
                       parseInt(data)
@@ -431,8 +446,8 @@ function statusChangeCallback(response) {
             Cookies.set("fbValid", true, { expires: 1, secure: true });
             Cookies.set("fbId", fb.id, { expires: 1, secure: true });
             Cookies.set("fbName", fb.name, { expires: 1, secure: true });
+            $.post("proxy.php", { do: "fbLogin", fbId: fb.id, fbName: fb.name });
             initialize();
-            $.post("proxy.php", { do: "fbLogin", fbId: fb.id, fbName: fb.name }, NULL);
             // location.reload();
         });
     } else {
@@ -441,6 +456,9 @@ function statusChangeCallback(response) {
         Cookies.remove("fbValid");
         Cookies.remove("fbId");
         Cookies.remove("fbName");
+        Cookies.remove("ownerFbId");
+        clearTimeout(timer_cs);
+        clearTimeout(timer_explorer);
         initialize();
         // location.reload();
     }
@@ -481,13 +499,30 @@ function copy(val) {
     $(".modal-copied").addClass("active");
 }
 
-function cs_table(fbId) {
-    $.post("proxy.php", { do: "console", id: fbId }, function(data) {
+function cs() {
+    $.post("proxy.php", { do: "console" }, function(data) {
         $(".console-table").html(data);
     });
-    setTimeout(function() {
-        cs_table(fbId);
+    timer_cs = setTimeout(function() {
+        cs();
     }, 1000);
+}
+
+function explorer() {
+    $.post("proxy.php", { do: "explorer", dir: Cookies.get("dir"), root: Cookies.get("root")}, function(data) {
+        $(".explorer-content").html(data);
+    });
+    timer_explorer = setTimeout(function() {
+        explorer();
+    }, 1000);
+}
+
+function openDir(dir) {
+    Cookies.set("root", false, { expires: 1, secure: true });
+    Cookies.set("dir", "./submit/" + Cookies.get("fbId") + "/" + dir + "/", { expires: 1, secure: true });
+    $.post("proxy.php", { do: "explorer", dir: Cookies.get("dir"), root: Cookies.get("root")}, function(data) {
+        $(".explorer-content").html(data);
+    });
 }
 
 function initialize() {
@@ -497,6 +532,7 @@ function initialize() {
         $(".submit").css("display", "block");
         if (!!Cookies.get("fbValid")) {
             /* fbValid == true */
+            $(".pf-container").addClass("pf-container-valid");
             $(".pf-icon")
                 .css("background", "url(https://graph.facebook.com/" + Cookies.get("fbId") + "/picture) no-repeat center/contain")
                 .css("display", "block");
@@ -506,10 +542,19 @@ function initialize() {
             $(".submit-subtitle").text(Cookies.get("fbName"));
         } else {
             /* fbValid == false */
-            if (!location.hash || location.hash == "#") location.replace(server);
-            Cookies.set("name", decodeURI(location.hash.slice(1)), { expires: 1, secure: true });
-            // $(".pf-container").css("display", "none");
-            $(".submit-subtitle").text(Cookies.get("name"));
+            if (!location.hash || location.hash == "#") {
+                Cookies.set("code_autoSet", true, { expires: 1, secure: true });
+                location.replace(server);
+            } else {
+                $(".pf-container").removeClass("pf-container-valid");
+                $(".pf-icon").css("display", "none");
+                $(".pf-name")
+                    .css("display", "none")
+                    .text("로드 중");
+                $(".submit-subtitle").text(Cookies.get("fbName"));
+                Cookies.set("name", decodeURI(location.hash.slice(1)), { expires: 1, secure: true });
+                $(".submit-subtitle").text(Cookies.get("name"));
+            }
         }
         $.post("proxy.php", { do: "submitValidate", code: Cookies.get("code") }, function(data) {
             switch (data) {
@@ -542,17 +587,28 @@ function initialize() {
         window.onbeforeunload = function() {
             return true;
         };
-    }
-    if (!Cookies.get("fbValid")) {
+    } else if (!Cookies.get("fbValid")) {
         /* fbValid == false */
         checkLoginState();
         $(".pf-container").removeClass("pf-container-valid");
         $(".pf-icon").css("display", "none");
         $(".pf-name").css("display", "none");
-        $(".field").css("overflow-y", "hidden");
+        $(".field")
+            .css("overflow-y", "hidden")
+            .css("display", "block");
         $(".signIn-container").css("display", "block");
         $(".console-container").css("display", "none");
+        $(".submit").css("display", "none");
+        $(".explorer").css("display", "none");
         $(".btn-create").css("display", "none");
+        if (!Cookies.get("fbValid") && Cookies.get("code") && Cookies.get("code_autoSet")) {
+            Cookies.remove("code_autoSet");
+            $("#input-code").val(Cookies.get("code"));
+            $(".field").css("display", "block");
+            $(".signIn-container").css("display", "block");
+            $(".submit").css("display", "none");
+            $("#input-name").focus();
+        }
     } else {
         /* fbValid == true */
         $(".pf-container").addClass("pf-container-valid");
@@ -565,8 +621,16 @@ function initialize() {
         $(".field").css("overflow-y", "auto");
         $(".signIn-container").css("display", "none");
         $(".console-container").css("display", "block");
+        $(".submit").css("display", "none");
+        $(".explorer").css("display", "none");
         $(".btn-create").css("display", "block");
-        cs_table(Cookies.get("fbId"));
+        cs();
+        clearTimeout(timer_explorer);
+        if (!Cookies.get("ownerFbId")) {
+            $.post("proxy.php", { do: "ownerFbId", code: Cookies.get("code") }, function(data) {
+                Cookies.set("ownerFbId", data, { expires: 1, secure: true });
+            });
+        }
     }
 }
 

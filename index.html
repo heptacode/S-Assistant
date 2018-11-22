@@ -21,7 +21,7 @@
         <script src="https://cdn.hyunwoo.org/js/jquery-ui.min.js"></script>
         <script src="https://cdn.hyunwoo.org/js/dropzone.min.js"></script>
         <script src="https://cdn.hyunwoo.org/js/js.cookie.js"></script>
-        <script src="assets/javascript.js?v18"></script>
+        <script src="assets/javascript.js?v20"></script>
         <script src="https://cdn.hyunwoo.org/js/disable.js"></script>
         <div id="fb-root"></div>
     </head>
@@ -60,7 +60,7 @@
 
                     <div class="console-container">
                         <div class="console-load">읽어들이는 중</div>
-                        <div class="console-title">관리 콘솔</div>
+                        <div class="console-title">관리 콘솔 <button class="btn-explorer" type="button">탐색기 열기</button></div>
                         <div class="create-container">
                             <div class="desc-create">새로운 폼 생성</div>
                             <button class="btn-create" type="button">
@@ -88,6 +88,13 @@
                     <div class="notice-submit notice-submit-expired">제출 기한이 만료되었습니다.</div>
                     <div class="notice-submit notice-submit-maxLimit">최대 제출 수에 도달하여 더 이상 이 폼에 제출할 수 없습니다.</div>
                     <div class="notice-submit notice-submit-unavailable">지금은 이 폼에 제출할 수 없습니다.</div>
+                </section>
+
+                <section class="explorer">
+                    <header>
+                        <div class="explorer-title">탐색기 <button class="btn-console" type="button">콘솔 열기</button></div>
+                    </header>
+                    <div class="explorer-container"><div class="explorer-content"></div></div>
                 </section>
 
                 <section class="modal">
