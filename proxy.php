@@ -206,6 +206,10 @@ switch ($_POST['do']) {
     case 'explorer':
         $files = scandir($_POST['dir']);
         for ($i = 2; $files[$i]; $i++) {
+            if (strpos($files[$i], '.DS_Store') !== false || strpos($files[$i], '@eaDir') !== false) {
+                continue;
+            }
+
             $exist = false;
             $query = "SELECT * FROM forms";
             $result = mysqli_query($connect, $query);
@@ -219,9 +223,6 @@ switch ($_POST['do']) {
             echo $exist ? '<div class="folder-group" onclick=openDir("' . $files[$i] . '")><div class="folder"></div><div class="folder-name">' . $label . '</div></div>' : '<div class="file-group" onclick="download(' . $download . ')"><div class="file"></div><div class="file-name">' . $files[$i] . '</div></div>';
         }
         break;
-
-    default:
-        die();
 }
 
 /*
@@ -233,12 +234,6 @@ if (!empty($_FILES)) {
     if (in_array($ext, $deny)) {
         die(0);
     }
-    $query = "SELECT submits FROM forms WHERE code='" . $_COOKIE['code'] . "'";
-    $result = mysqli_query($connect, $query);
-    $data = mysqli_fetch_array($result);
-    $submits = ++$data['submits'];
-    $query = "UPDATE forms SET submits='" . $submits . "' WHERE code='" . $_COOKIE['code'] . "'";
-    mysqli_query($connect, $query);
 
     $dir1 = "." . $ds . "submit" . $ds . $_COOKIE['ownerFbId'] . $ds;
     $dir2 = $dir1 . $_COOKIE['code'] . $ds;
@@ -247,32 +242,28 @@ if (!empty($_FILES)) {
     $tempFile = $_FILES['file']['tmp_name'];
     $targetFile = dirname(__FILE__) . $ds . $dir2 . $ds . $_FILES['file']['name'] . '_' . ($_COOKIE['fbValid'] ? $_COOKIE['fbName'] : $_COOKIE['name']) . '_' . date('y-m-d_H-i-s') . '.' . $ext;
     move_uploaded_file($tempFile, $targetFile);
+
+    $query = "SELECT submits FROM forms WHERE code='" . $_COOKIE['code'] . "'";
+    $result = mysqli_query($connect, $query);
+    $data = mysqli_fetch_array($result);
+    $submits = ++$data['submits'];
+    $query = "UPDATE forms SET submits='" . $submits . "' WHERE code='" . $_COOKIE['code'] . "'";
+    mysqli_query($connect, $query);
 }
 mysqli_close($connect);
 
 /*
 사전 정의 함수 영역
  */
+
 function strChk($str)
 {
-    if (
-        strpos($str, '/') !== false ||
-        strpos($str, '\\') !== false ||
-        strpos($str, '.') !== false ||
-        strpos($str, '$') !== false ||
-        strpos($str, '&') !== false ||
-        strpos($str, '*') !== false ||
-        strpos($str, '\/') !== false ||
-        strpos($str, '<') !== false ||
-        strpos($str, '>') !== false ||
-        strpos($str, ':') !== false ||
-        strpos($str, ';') !== false ||
-        strpos($str, '(') !== false ||
-        strpos($str, ')') !== false
-    ) {
-        die(0);
+    $deny = array('!', '@', '$', '%', '^', '&', '*', '`', '~', '\\', '/', '\/', '<', '>', '|', ':', ';');
+    for ($i = 0; $i < count($deny); $i++) {
+        if (strpos($str, $deny[$i]) !== false) {
+            die(0);
+        }
     }
-
 }
 
 function rmdirF($dir)

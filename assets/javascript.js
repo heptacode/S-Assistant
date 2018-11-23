@@ -415,6 +415,7 @@ function signIn() {
     if (valid) {
         $(".btn-signIn").css("display", "none");
         $(".load-signIn").css("display", "block");
+        Cookies.set("code", $("#input-code").val(), { expires: 1, secure: true });
         $.post(
             "proxy.php",
             {
@@ -536,46 +537,34 @@ function submitValidate() {
     $.post("proxy.php", { do: "submitValidate", code: Cookies.get("code") }, function(data) {
         switch (data) {
             case "validationError_fbRequired":
-                $(".dropzone")
-                    .css("display", "none")
-                    .removeAttr("action");
+                $(".dropzone").css("display", "none");
                 $(".notice-submit-fbRequired").css("display", "flex");
                 $(".pf-container").css("display", "block");
                 break;
 
             case "validationError_beforePost":
-                $(".dropzone")
-                    .css("display", "none")
-                    .removeAttr("action");
+                $(".dropzone").css("display", "none");
                 $(".notice-submit-beforePost").css("display", "flex");
                 break;
 
             case "validationError_expired":
-                $(".dropzone")
-                    .css("display", "none")
-                    .removeAttr("action");
+                $(".dropzone").css("display", "none");
                 $(".notice-submit-expired").css("display", "flex");
                 break;
 
             case "validationError_maxLimit":
-                $(".dropzone")
-                    .css("display", "none")
-                    .removeAttr("action");
+                $(".dropzone").css("display", "none");
                 $(".notice-submit-maxLimit").css("display", "flex");
                 break;
 
             case "validationError_unavailable":
-                $(".dropzone")
-                    .css("display", "none")
-                    .removeAttr("action");
+                $(".dropzone").css("display", "none");
                 $(".notice-submit-unavailable").css("display", "flex");
                 break;
 
             default:
                 $(".submit-title").text(data);
-                $(".dropzone")
-                    .attr("action", "proxy.php")
-                    .css("display", "flex");
+                $(".dropzone").css("display", "flex");
                 $(".notice-submit").css("display", "none");
         }
     });
@@ -679,11 +668,11 @@ function initialize() {
         $(".btn-create").css("display", "block");
         cs();
         clearTimeout(timer_explorer);
-        if (!Cookies.get("ownerFbId")) {
-            $.post("proxy.php", { do: "ownerFbId", code: Cookies.get("code") }, function(data) {
-                Cookies.set("ownerFbId", data, { expires: 1, secure: true });
-            });
-        }
+    }
+    if (!Cookies.get("ownerFbId")) {
+        $.post("proxy.php", { do: "ownerFbId", code: Cookies.get("code") }, function(data) {
+            Cookies.set("ownerFbId", data, { expires: 1, secure: true });
+        });
     }
 }
 
