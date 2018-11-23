@@ -1,3 +1,6 @@
+/*
+    INITIALIZE
+*/
 $.ajaxSetup({ cache: false });
 $.datepicker.setDefaults({
     dateFormat: "yy-mm-dd",
@@ -11,10 +14,19 @@ $.datepicker.setDefaults({
     dayNamesMin: ["일", "월", "화", "수", "목", "금", "토"],
     showMonthAfterYear: true
 });
+
+/*
+    GLOBAL VARIABLES
+*/
 var server = "https://submit.hyunwoo.org/",
+    cdnserver = "https://submit-cdn.hyunwoo.org/",
     modifyCode,
     timer_cs,
     timer_explorer;
+
+/*
+    jQuery Functions
+*/
 $(function() {
     $(".datepicker").datepicker();
     $(".btn-close").click(function() {
@@ -34,8 +46,8 @@ $(function() {
         clearTimeout(timer_cs);
         $(".field").slideUp();
         $(".explorer").fadeIn("slow");
-        Cookies.set("root", true, { expires: 1, secure: true });
         Cookies.set("dir", "./submit/" + Cookies.get("fbId") + "/", { expires: 1, secure: true });
+        $(".btn-root").css("display", "none");
         explorer();
     });
     $(".btn-console").click(function() {
@@ -43,6 +55,13 @@ $(function() {
         $(".field").slideDown();
         $(".explorer").fadeOut();
         cs();
+    });
+    $(".btn-root").click(function() {
+        Cookies.set("dir", "./submit/" + Cookies.get("fbId") + "/", { expires: 1, secure: true });
+        $.post("proxy.php", { do: "explorer", dir: Cookies.get("dir") }, function(data) {
+            $(".explorer-content").html(data);
+        });
+        $(".btn-root").slideUp("slow");
     });
     $(".btn-create").hover(function() {
         $(".create-container").addClass("active");
@@ -397,8 +416,7 @@ function signIn() {
         );
     }
 }
-var code_random = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
-    code = "";
+var code_random = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 function codeSet() {
     $(".load-code").fadeIn();
     $(".create-preview-code").css("display", "none");
@@ -440,19 +458,14 @@ function statusChangeCallback(response) {
     $(".pf-icon").css("visible", "hidden");
     $(".pf-name").text("로드 중");
     if (response.status === "connected") {
-        // $('#content').css('opacity', '.3').css('pointer-events', 'none');
-        // $('.pf-container').html('<div class="pf-load">기다리십시오 ...</div>');
         FB.api("/me", function(fb) {
             Cookies.set("fbValid", true, { expires: 1, secure: true });
             Cookies.set("fbId", fb.id, { expires: 1, secure: true });
             Cookies.set("fbName", fb.name, { expires: 1, secure: true });
             $.post("proxy.php", { do: "fbLogin", fbId: fb.id, fbName: fb.name });
             initialize();
-            // location.reload();
         });
     } else {
-        // $('#content').css('opacity', '.3').css('pointer-events', 'none');
-        // $('.pf-container').html('<div class="pf-load">기다리십시오 ...</div>');
         Cookies.remove("fbValid");
         Cookies.remove("fbId");
         Cookies.remove("fbName");
@@ -460,7 +473,6 @@ function statusChangeCallback(response) {
         clearTimeout(timer_cs);
         clearTimeout(timer_explorer);
         initialize();
-        // location.reload();
     }
 }
 
@@ -509,7 +521,7 @@ function cs() {
 }
 
 function explorer() {
-    $.post("proxy.php", { do: "explorer", dir: Cookies.get("dir"), root: Cookies.get("root")}, function(data) {
+    $.post("proxy.php", { do: "explorer", dir: Cookies.get("dir") }, function(data) {
         $(".explorer-content").html(data);
     });
     timer_explorer = setTimeout(function() {
@@ -518,11 +530,15 @@ function explorer() {
 }
 
 function openDir(dir) {
-    Cookies.set("root", false, { expires: 1, secure: true });
     Cookies.set("dir", "./submit/" + Cookies.get("fbId") + "/" + dir + "/", { expires: 1, secure: true });
-    $.post("proxy.php", { do: "explorer", dir: Cookies.get("dir"), root: Cookies.get("root")}, function(data) {
+    $.post("proxy.php", { do: "explorer", dir: Cookies.get("dir") }, function(data) {
         $(".explorer-content").html(data);
+        $(".btn-root").slideDown("slow");
     });
+}
+
+function download(filename) {
+    window.open(cdnserver + Cookies.get("dir").slice(9) + filename);
 }
 
 function initialize() {

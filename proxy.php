@@ -1,8 +1,8 @@
 <?
-// if(!isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
-//   header('HTTP/1.0 403 Forbidden');
-//   die('<meta http-equiv="refresh" content="0;url=/">');
-// }
+if(!isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
+  header('HTTP/1.0 403 Forbidden');
+  die('<meta http-equiv="refresh" content="0;url=/">');
+}
 date_default_timezone_set('KST');
 $connect = mysqli_connect('hyunwoo.org:3307', 'submit', 'AccountForSubmit', 'submit') or die('인터넷 연결 끊김');
 $sever = 'https://submit.hyunwoo.org/';
@@ -71,16 +71,16 @@ switch($_POST['do']){
             }
             $nodata = false;
             $diff = time() - strtotime($data['createTsp']);
-            $s = 60; //1분 = 60초
-            $h = $s * 60; //1시간 = 60분
-            $d = $h * 24; //1일 = 24시간
-            $y = $d * 10; //1년 = 1일 * 10일
+            $s = 60;
+            $h = $s * 60;
+            $d = $h * 24;
+            $y = $d * 10;
             if($diff < 0) $create = abs($diff).'초 후';
             elseif($diff < $s) $create = $diff.'초 전';
             elseif($h > $diff && $diff >= $s) $create = round($diff/$s).'분 전';
             elseif($d > $diff && $diff >= $h) $create = round($diff/$h).'시간 전';
             elseif($y > $diff && $diff >= $d) $create = round($diff/$d).'일 전';
-            else $create = /*strtok($data['tsp'], '-').'.&nbsp'.strtok('-').'.&nbsp;'.strtok('-');*/date('Y. m. d', $data['TIME']);
+            else $create = date('Y. m. d', $data['TIME']);
             
             $diff = strtotime($data['postTsp']) - time();
             if($diff < 0 || $data['postNow']) $post = '게시됨';
@@ -124,14 +124,7 @@ switch($_POST['do']){
         $tableName = $_POST['code'];
         $postTsp = $_POST['postDate'].' '.$_POST['postTime'];
         $deadlineTsp = $_POST['deadlineDate'].' '.$_POST['deadlineTime'];
-        $query = "INSERT INTO forms VALUES (NULL, '".date('Y-m-d H:i:s')."', '".$_POST['label']."', '".$_POST['max']."', '".$_POST['postNow']."', '".$postTsp."', '".$_POST['unlimited']."', '".$deadlineTsp."', '".$_POST['afterDeadline']."', '".$_POST['useFb']."', '".$_POST['code']."', '0', '".$_POST['fbId']."', '.', '.')";
-        /*CREATE TABLE form_$tableName (
-            Id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-            submitTsp TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
-            name VARCHAR(10) NOT NULL,
-            fbId VARCHAR(64) NOT NULL,
-            files VARCHAR(10000) NOT NULL
-        );*/
+        $query = "INSERT INTO forms VALUES (NULL, '".date('Y-m-d H:i:s')."', '".$_POST['label']."', '".$_POST['max']."', '".$_POST['postNow']."', '".$postTsp."', '".$_POST['unlimited']."', '".$deadlineTsp."', '".$_POST['afterDeadline']."', '".$_POST['useFb']."', '".$_POST['code']."', '0', '".$_POST['fbId']."', '', '')";
         $result = mysqli_query($connect, $query);
         $dir1 = ".".$ds."submit".$ds.$_POST['fbId'].$ds;
         $dir2 = $dir1.$_POST['code'].$ds;
@@ -152,7 +145,6 @@ switch($_POST['do']){
     case 'remove':
         $code = $_POST['code'];
         $query = "DELETE FROM forms WHERE code='$code'";
-        /* DROP TABLE form_$code; */
         $result = mysqli_query($connect, $query);
         rmdirF(".".$ds."submit".$ds.$_COOKIE['fbId'].$ds.$_POST['code'].$ds);
         echo $result ? 1 : 0;
@@ -171,40 +163,27 @@ switch($_POST['do']){
     case 'explorer':
         $files = scandir($_POST['dir']);
         for($i = 2; $files[$i]; $i++){
+            $exist = false;
             $query = "SELECT * FROM forms";
             $result = mysqli_query($connect, $query);
-            while($data = mysqli_fetch_array($result))
-                if($data['code'] == $files[$i])
+            while($data = mysqli_fetch_array($result)){
+                if($data['code'] == $files[$i]){
+                    $exist = true;
                     $label = $data['label'];
-            // echo .'.'.$ds.'submit'.$ds.$_COOKIE['fbId'].$ds.$dir.$ds
-            echo $_POST['root'] ?
-            '<div class="icon-group" onclick=openDir("'.$files[$i].'")><div class="folder"></div><div class="icon-name">'.$label.'</div></div>' :
-            '<div class="icon-group" onclick=download("'.$files[$i].'")><div class="file"></div><div class="icon-name">'.$files[$i].'</div></div>';
+                }
+            }
+            $download = "'".$files[$i]."'";
+            echo $exist ? '<div class="folder-group" onclick=openDir("'.$files[$i].'")><div class="folder"></div><div class="folder-name">'.$label.'</div></div>' : '<div class="file-group" onclick="download('.$download.')"><div class="file"></div><div class="file-name">'.$files[$i].'</div></div>';
         }
-
-        // $query = "SELECT * FROM forms ORDER BY forms.Id DESC";
-        // while($data = mysqli_fetch_array($result)){
-        //     if($data['owner'] == $_POST["fbId"]){
-        //         // $data['code'];
-        //         echo '<div class="folder-wrap"><div class="folder"></div>'.$files.'</div>';
-        //     }
-        // }
-        // echo '';
-
-
-        // for($i = 2; $files[$i]; $i++)
-        // echo'<tr><td>'.($i - 1).'</td><td><a href="https://submit-cdn.hyunwoo.org/"'.$_GET['d'].'/'.$_GET['v'].'/'.$files[$i].'" target="_blank">'.$files[$i].'</a></td></tr>';
-        // echo "</table></section></div>";
         break;
-    
-    // case 'explorer_openDir':
-    //     $_COOKIE['dir'] = $_COOKIE['dir'].$ds.$_POST['dir'].$ds;
-    //     break;
 
     default:
-        echo '매개변수 없음';
+        die();
 }
 
+/*
+    클라이언트 파일 수신 처리
+*/
 if(!empty($_FILES)){
     $deny =  array('php', 'htaccess');
     $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
@@ -223,36 +202,14 @@ if(!empty($_FILES)){
     $query = "UPDATE forms SET submits='".$submits."' WHERE code='".$_COOKIE['code']."'";
     mysqli_query($connect, $query);
     move_uploaded_file($tempFile, $targetFile);
-
-    // $tableName = $_POST['code'];
-    // $ifExists = false;
-    // $files = NULL;
-    // $query = "SELECT * FROM form_$tableName";
-    // $result = mysqli_query($connect, $query);
-    // while($data = mysqli_fetch_array($result)){
-    //     if($data['name'] == $_COOKIE['fbValid'] ? $_COOKIE['fbName'] : $_COOKIE['name']){
-    //         $ifExists = true;
-    //         $files = $data['files'];
-    //     }
-    // }
-    // if(!$ifExists){
-    //     $name = $_COOKIE['fbValid'] ? $_COOKIE['fbName'] : $_COOKIE['name'];
-    //     $files = $tempFile;
-    //     $query = "INSERT INTO form_$tableName VALUES (NULL, '".date('Y-m-d H:i:s')."', '".$name."', '".$_COOKIE['fbId']."', '".$files."')";
-    //     mysqli_query($connect, $query);
-    // }
-    // else {
-    //     $files = $files.'|'.$tempFile;
-    //     $query = "UPDATE form_$tableName SET submitTsp='".date('Y-m-d H:i:s')."', files='".$files."' WHERE name='".$_COOKIE['fbName'] ? $_COOKIE['fbName'] : $_COOKIE['name']."'";
-    //     mysqli_query($connect, $query);
-    // }
 }
-
-
 
 
 mysqli_close($connect);
 
+/*
+    사전 정의 함수 영역
+*/
 function strChk($str){
     if(
         strpos($str, '/') !== false ||
@@ -285,4 +242,5 @@ function rmdirF($dir) {
      $dirs->close();
      @rmdir($dir);
  }
+//  출처  |  http://flystone.tistory.com/54 (PHP, rmdir과 폴더 통째로 지우기)
 ?>
