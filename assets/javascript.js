@@ -79,11 +79,11 @@ $(function() {
             $(".explorer-content").html(data);
         });
         $(".btn-root").slideUp("slow");
-        $(".btn-zip").css('display', 'none');
+        $(".btn-zip").css("display", "none");
     });
     $(".btn-zip").click(function() {
         $.post("proxy.php", { do: "zip", dir: Cookies.get("dir") }, function(data) {
-            window.open(server + "tmp/" + data);
+            url(server + "tmp/" + data);
         });
     });
     $(".btn-create").hover(function() {
@@ -535,6 +535,14 @@ function copy(val) {
     $(".modal-copied").addClass("active");
 }
 
+function url(url) {
+    var e = document.createElement("iframe");
+    document.body.appendChild(e);
+    document.getElementsByTagName("iframe")[0].src = url;
+    document.body.removeChild(e);
+    return false;
+}
+
 function cs() {
     $.post("proxy.php", { do: "console" }, function(data) {
         $(".console-table").html(data);
@@ -607,7 +615,7 @@ function remove(target) {
 }
 
 function download(filename) {
-    window.open(cdnserver + Cookies.get("dir").slice(9) + filename);
+    url(cdnserver + Cookies.get("dir").slice(9) + filename);
 }
 
 function initialize() {
