@@ -14,6 +14,17 @@ $.datepicker.setDefaults({
     dayNamesMin: ["일", "월", "화", "수", "목", "금", "토"],
     showMonthAfterYear: true
 });
+window.addEventListener("offline", function() {
+    $(".notice-offline").slideDown();
+    $(".notice-online").fadeOut();
+});
+window.addEventListener("online", function() {
+    $(".notice-online").slideDown();
+    $(".notice-offline").fadeOut();
+    setTimeout(function() {
+        $(".notice-online").slideUp();
+    }, 5000);
+});
 
 /*
     GLOBAL VARIABLES
