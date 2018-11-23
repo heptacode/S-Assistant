@@ -590,6 +590,10 @@ function openDir(dir) {
     });
 }
 
+function remove(target) {
+    confirm(target + "이(가) 영구적으로 삭제됩니다.") ? $.post("proxy.php", { do: "remove", target: Cookies.get("dir") + target }) : NULL;
+}
+
 function download(filename) {
     window.open(cdnserver + Cookies.get("dir").slice(9) + filename);
 }

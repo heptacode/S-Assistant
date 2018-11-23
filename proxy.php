@@ -219,9 +219,13 @@ switch ($_POST['do']) {
                     $label = $data['label'];
                 }
             }
-            $download = "'" . $files[$i] . "'";
-            echo $exist ? '<div class="folder-group" onclick=openDir("' . $files[$i] . '")><div class="folder"></div><div class="folder-name">' . $label . '</div></div>' : '<div class="file-group" onclick="download(' . $download . ')"><div class="file"></div><div class="file-name">' . $files[$i] . '</div></div>';
+            $target = "'" . $files[$i] . "'";
+            echo $exist ? '<div class="folder-group" onclick=openDir("' . $files[$i] . '")><div class="folder"></div><div class="folder-name">' . $label . '</div></div>' : '<div class="file-group"><div class="file-remove" onclick="remove(' . $target . ')"></div><div class="file" onclick="download(' . $target . ')"></div><div class="file-name" onclick="download(' . $target . ')">' . $files[$i] . '</div></div>';
         }
+        break;
+    
+    case 'remove':
+        unlink(realpath($_POST['target']));
         break;
 }
 
