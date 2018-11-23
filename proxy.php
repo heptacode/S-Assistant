@@ -189,7 +189,7 @@ switch ($_POST['do']) {
         $code = $_POST['code'];
         $query = "DELETE FROM forms WHERE code='$code'";
         $result = mysqli_query($connect, $query);
-        rmdirF("." . $ds . "submit" . $ds . $_COOKIE['fbId'] . $ds . $_POST['code'] . $ds);
+        rmdirAll("." . $ds . "submit" . $ds . $_COOKIE['fbId'] . $ds . $_POST['code'] . $ds);
         echo $result ? 1 : 0;
         break;
 
@@ -223,9 +223,10 @@ switch ($_POST['do']) {
             echo $exist ? '<div class="folder-group" onclick=openDir("' . $files[$i] . '")><div class="folder"></div><div class="folder-name">' . $label . '</div></div>' : '<div class="file-group"><div class="file-remove" onclick="remove(' . $target . ')"></div><div class="file" onclick="download(' . $target . ')"></div><div class="file-name" onclick="download(' . $target . ')">' . $files[$i] . '</div></div>';
         }
         break;
-    
-    case 'remove':
-        unlink(realpath($_POST['target']));
+
+    case 'unlink':
+        // unlink($_POST['dir'].$_POST['target']);
+        rename($_POST['dir'].$_POST['target'], ".".$ds."trashes".$ds.$_POST['target']);
         break;
 }
 
@@ -244,7 +245,7 @@ if (!empty($_FILES)) {
     mkdir($dir1, 0700);
     mkdir($dir2, 0700);
     $tempFile = $_FILES['file']['tmp_name'];
-    $targetFile = dirname(__FILE__) . $ds . $dir2 . $ds . $_FILES['file']['name'] . '_' . ($_COOKIE['fbValid'] ? $_COOKIE['fbName'] : $_COOKIE['name']) . '_' . date('y-m-d_H-i-s') . '.' . $ext;
+    $targetFile = dirname(__FILE__) . $ds . $dir2 . $ds . pathinfo($_FILES['file']['name'], PATHINFO_FILENAME) . '_' . ($_COOKIE['fbValid'] ? $_COOKIE['fbName'] : $_COOKIE['name']) . '.' . $ext;
     move_uploaded_file($tempFile, $targetFile);
 
     $query = "SELECT submits FROM forms WHERE code='" . $_COOKIE['code'] . "'";
@@ -270,20 +271,19 @@ function strChk($str)
     }
 }
 
-function rmdirF($dir)
+function rmdirAll($dir)
 {
-    $dirs = dir($dir);
-    while (($entry = $dirs->read()) !== false) {
+    while (($entry = dir($dir)->read()) !== false) {
         if (($entry != '.') && ($entry != '..')) {
             if (is_dir($dir . '/' . $entry)) {
-                rmdirF($dir . '/' . $entry);
+                rmdirAll($dir . '/' . $entry);
             } else {
                 @unlink($dir . '/' . $entry);
             }
 
         }
     }
-    $dirs->close();
+    dir($dir)->close();
     @rmdir($dir);
 }
-//  출처  |  http://flystone.tistory.com/54 (PHP, rmdir과 폴더 통째로 지우기)
+//  REF  |  http://flystone.tistory.com/54 (PHP, rmdir과 폴더 통째로 지우기)

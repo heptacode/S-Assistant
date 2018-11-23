@@ -60,12 +60,14 @@ $(function() {
         $(".explorer").fadeIn("slow");
         Cookies.set("dir", "./submit/" + Cookies.get("fbId") + "/", { expires: 1, secure: true });
         $(".btn-root").css("display", "none");
+        $("html").addClass("html-infinite");
         explorer();
     });
     $(".btn-console").click(function() {
         clearTimeout(timer_explorer);
         $(".field").slideDown();
         $(".explorer").fadeOut();
+        $("html").removeClass("html-infinite");
         cs();
     });
     $(".btn-root").click(function() {
@@ -591,7 +593,7 @@ function openDir(dir) {
 }
 
 function remove(target) {
-    confirm(target + "이(가) 영구적으로 삭제됩니다.") ? $.post("proxy.php", { do: "remove", target: Cookies.get("dir") + target }) : NULL;
+    confirm(target + "\n\n위 파일이 영구적으로 삭제됩니다.") ? $.post("proxy.php", { do: "unlink", dir: Cookies.get("dir"), target:  target }) : NULL;
 }
 
 function download(filename) {
@@ -599,6 +601,7 @@ function download(filename) {
 }
 
 function initialize() {
+    $("html").removeClass("html-infinite");
     if (location.pathname != "/") {
         Cookies.set("code", location.pathname.slice(1), { expires: 1, secure: true });
         $(".field").css("display", "none");
