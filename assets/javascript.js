@@ -33,6 +33,7 @@ var server = "https://submit.hyunwoo.org/",
     cdnserver = "https://submit-cdn.hyunwoo.org/",
     modifyCode,
     timer_cs,
+    timer_submitValidate,
     timer_explorer;
 
 /*
@@ -531,6 +532,58 @@ function cs() {
     }, 1000);
 }
 
+function submitValidate() {
+    $.post("proxy.php", { do: "submitValidate", code: Cookies.get("code") }, function(data) {
+        switch (data) {
+            case "validationError_fbRequired":
+                $(".dropzone")
+                    .css("display", "none")
+                    .removeAttr("action");
+                $(".notice-submit-fbRequired").css("display", "flex");
+                $(".pf-container").css("display", "block");
+                break;
+
+            case "validationError_beforePost":
+                $(".dropzone")
+                    .css("display", "none")
+                    .removeAttr("action");
+                $(".notice-submit-beforePost").css("display", "flex");
+                break;
+
+            case "validationError_expired":
+                $(".dropzone")
+                    .css("display", "none")
+                    .removeAttr("action");
+                $(".notice-submit-expired").css("display", "flex");
+                break;
+
+            case "validationError_maxLimit":
+                $(".dropzone")
+                    .css("display", "none")
+                    .removeAttr("action");
+                $(".notice-submit-maxLimit").css("display", "flex");
+                break;
+
+            case "validationError_unavailable":
+                $(".dropzone")
+                    .css("display", "none")
+                    .removeAttr("action");
+                $(".notice-submit-unavailable").css("display", "flex");
+                break;
+
+            default:
+                $(".submit-title").text(data);
+                $(".dropzone")
+                    .attr("action", "proxy.php")
+                    .css("display", "flex");
+                $(".notice-submit").css("display", "none");
+        }
+    });
+    timer_submitValidate = setTimeout(function() {
+        submitValidate();
+    }, 1000);
+}
+
 function explorer() {
     $.post("proxy.php", { do: "explorer", dir: Cookies.get("dir") }, function(data) {
         $(".explorer-content").html(data);
@@ -583,34 +636,7 @@ function initialize() {
                 $(".submit-subtitle").text(Cookies.get("name"));
             }
         }
-        $.post("proxy.php", { do: "submitValidate", code: Cookies.get("code") }, function(data) {
-            switch (data) {
-                case "validationError_fbRequired":
-                    $(".notice-submit-fbRequired").css("display", "flex");
-                    $(".pf-container").css("display", "block");
-                    break;
-
-                case "validationError_beforePost":
-                    $(".notice-submit-beforePost").css("display", "flex");
-                    break;
-
-                case "validationError_expired":
-                    $(".notice-submit-expired").css("display", "flex");
-                    break;
-
-                case "validationError_maxLimit":
-                    $(".notice-submit-maxLimit").css("display", "flex");
-                    break;
-
-                case "validationError_unavailable":
-                    $(".notice-submit-unavailable").css("display", "flex");
-                    break;
-
-                default:
-                    $(".submit-title").text(data);
-                    $(".dropzone").css("display", "flex");
-            }
-        });
+        submitValidate();
         window.onbeforeunload = function() {
             return true;
         };

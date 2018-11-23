@@ -1,8 +1,8 @@
 <?
-if (!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
-    header('HTTP/1.0 403 Forbidden');
-    die('<meta http-equiv="refresh" content="0;url=/">');
-}
+// if (!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+//     header('HTTP/1.0 403 Forbidden');
+//     die('<meta http-equiv="refresh" content="0;url=/">');
+// }
 date_default_timezone_set('KST');
 $connect = mysqli_connect('hyunwoo.org:3307', 'submit', 'AccountForSubmit', 'submit') or die(0);
 $sever = 'https://submit.hyunwoo.org/';
@@ -233,6 +233,12 @@ if (!empty($_FILES)) {
     if (in_array($ext, $deny)) {
         die(0);
     }
+    $query = "SELECT submits FROM forms WHERE code='" . $_COOKIE['code'] . "'";
+    $result = mysqli_query($connect, $query);
+    $data = mysqli_fetch_array($result);
+    $submits = ++$data['submits'];
+    $query = "UPDATE forms SET submits='" . $submits . "' WHERE code='" . $_COOKIE['code'] . "'";
+    mysqli_query($connect, $query);
 
     $dir1 = "." . $ds . "submit" . $ds . $_COOKIE['ownerFbId'] . $ds;
     $dir2 = $dir1 . $_COOKIE['code'] . $ds;
@@ -240,15 +246,8 @@ if (!empty($_FILES)) {
     mkdir($dir2, 0700);
     $tempFile = $_FILES['file']['tmp_name'];
     $targetFile = dirname(__FILE__) . $ds . $dir2 . $ds . $_FILES['file']['name'] . '_' . ($_COOKIE['fbValid'] ? $_COOKIE['fbName'] : $_COOKIE['name']) . '_' . date('y-m-d_H-i-s') . '.' . $ext;
-    $query = "SELECT submits FROM forms WHERE code='" . $_COOKIE['code'] . "'";
-    mysqli_query($connect, $query);
-    $data = mysqli_fetch_array($result);
-    $submits = ++$data['submits'];
-    $query = "UPDATE forms SET submits='" . $submits . "' WHERE code='" . $_COOKIE['code'] . "'";
-    mysqli_query($connect, $query);
     move_uploaded_file($tempFile, $targetFile);
 }
-
 mysqli_close($connect);
 
 /*
