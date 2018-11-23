@@ -225,8 +225,23 @@ switch ($_POST['do']) {
         break;
 
     case 'unlink':
-        // unlink($_POST['dir'].$_POST['target']);
-        rename($_POST['dir'].$_POST['target'], ".".$ds."trashes".$ds.$_POST['target']);
+        rename($_POST['dir'] . $_POST['target'], "." . $ds . "trashes" . $ds . $_POST['target']);
+        break;
+
+    case 'zip':
+        $zip = new ZipArchive;
+        $zip_name = 'S-Assistant_'.date('ymdHis').'_'.rand().'.zip';
+        $res = $zip->open('.'.$ds.'tmp'.$ds.$zip_name, ZipArchive::CREATE);
+        if ($res === TRUE) {
+            $files = scandir($_POST['dir']);
+            for ($i = 2; $files[$i]; $i++) {
+                $zip->addFile($_POST['dir'].$files[$i], $files[$i]);
+            }
+            $zip->close();
+            echo $zip_name;
+        } else {
+            die();
+        }
         break;
 }
 

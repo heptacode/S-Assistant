@@ -680,6 +680,25 @@ table td {
 .btn-root:hover {
     color: rgba(255, 255, 255, 0.5);
 }
+.btn-zip {
+    display: none;
+    position: absolute;
+    top: 3rem;
+    left: 1rem;
+    padding: 4px 16px;
+    border: 1px solid white;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    -webkit-transition: 0.15s;
+    -moz-transition: 0.15s;
+    -o-transition: 0.15s;
+    transition: 0.15s;
+}
+.btn-zip:hover {
+    color: rgba(255, 255, 255, 0.5);
+}
 .explorer-container {
     width: 100%;
     padding-right: 15px;
