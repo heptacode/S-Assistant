@@ -29,7 +29,7 @@ html {
     z-index: -1;
 }
 .html-infinite {
-    background: rgb(94, 86, 86);
+    background: rgb(60, 59, 60);
     overflow-y: auto;
     -webkit-transition: 2s;
     -moz-transition: 2s;
