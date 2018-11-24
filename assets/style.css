@@ -567,7 +567,7 @@ table td {
     -o-transition: 0.2s;
     transition: 0.2s;
 }
-.btn-modify:hover {
+.btn-modify:active {
     color: rgba(255, 255, 255, 0.5);
 }
 .site-info {
