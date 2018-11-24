@@ -1,8 +1,8 @@
 <?
-// if (!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
-//     header('HTTP/1.0 403 Forbidden');
-//     die('<meta http-equiv="refresh" content="0;url=/">');
-// }
+if (!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+    header('HTTP/1.0 403 Forbidden');
+    die('<meta http-equiv="refresh" content="0;url=/">');
+}
 date_default_timezone_set('KST');
 $connect = mysqli_connect('hyunwoo.org:3307', 'submit', 'AccountForSubmit', 'submit') or die(0);
 $sever = 'https://submit.hyunwoo.org/';
@@ -34,7 +34,7 @@ switch ($_POST['do']) {
             }
         }
 
-        echo $exist ? 1 : 0;
+        echo $exist ? true : false;
         break;
 
     case 'submitValidate':
@@ -70,7 +70,7 @@ switch ($_POST['do']) {
             }
         }
 
-        echo $overlap ? 1 : 0;
+        echo $overlap ? true : false;
         break;
 
     case 'console':
@@ -173,7 +173,7 @@ switch ($_POST['do']) {
         $dir2 = $dir1 . $_POST['code'] . $ds;
         mkdir($dir1, 0700);
         mkdir($dir2, 0700);
-        echo $result ? 1 : 0;
+        echo $result ? true : false;
         break;
 
     case 'modify':
@@ -182,7 +182,7 @@ switch ($_POST['do']) {
         $deadlineTsp = $_POST['deadlineDate'] . ' ' . $_POST['deadlineTime'];
         $query = "UPDATE forms SET label='" . $_POST['label'] . "', max='" . $_POST['max'] . "', postNow='" . $_POST['postNow'] . "', postTsp='" . $postTsp . "', unlimited='" . $_POST['unlimited'] . "', deadlineTsp='" . $deadlineTsp . "', afterDeadline='" . $_POST['afterDeadline'] . "', useFb='" . $_POST['useFb'] . "' WHERE code='" . $_POST['code'] . "'";
         $result = mysqli_query($connect, $query);
-        echo $result ? 1 : 0;
+        echo $result ? true : false;
         break;
 
     case 'remove':
@@ -190,7 +190,7 @@ switch ($_POST['do']) {
         $query = "DELETE FROM forms WHERE code='$code'";
         $result = mysqli_query($connect, $query);
         rmdirAll("." . $ds . "submit" . $ds . $_COOKIE['fbId'] . $ds . $_POST['code'] . $ds);
-        echo $result ? 1 : 0;
+        echo $result ? true : false;
         break;
 
     case 'ownerFbId':
@@ -288,17 +288,17 @@ function strChk($str)
 
 function rmdirAll($dir)
 {
-    while (($entry = dir($dir)->read()) !== false) {
+    $dirs = dir($dir);
+    while (false !== ($entry = $dirs->read())) {
         if (($entry != '.') && ($entry != '..')) {
             if (is_dir($dir . '/' . $entry)) {
                 rmdirAll($dir . '/' . $entry);
             } else {
                 @unlink($dir . '/' . $entry);
             }
-
         }
     }
-    dir($dir)->close();
+    $dirs->close();
     @rmdir($dir);
 }
 //  REF  |  http://flystone.tistory.com/54 (PHP, rmdir과 폴더 통째로 지우기)

@@ -78,7 +78,7 @@ $(function() {
         $.post("proxy.php", { do: "explorer", dir: Cookies.get("dir") }, function(data) {
             $(".explorer-content").html(data);
         });
-        $(".btn-root").slideUp("slow");
+        $(".btn-root").slideUp();
         $(".btn-zip").css("display", "none");
     });
     $(".btn-zip").click(function() {
@@ -222,7 +222,7 @@ $(function() {
                       fbId: Cookies.get("fbId")
                   },
                   function(data) {
-                      parseInt(data)
+                      data
                           ? ($(".modal-tab-create").removeClass("modal-tab-active"),
                             $(".modal-create").removeClass("active"),
                             $(".modal-create-content")
@@ -320,7 +320,7 @@ $(function() {
                       code: modifyCode
                   },
                   function(data) {
-                      parseInt(data)
+                      data
                           ? ($(".modal-tab-modify").removeClass("modal-tab-active"),
                             $(".modal-modify").removeClass("active"),
                             $(".modal-modify-content")
@@ -366,7 +366,7 @@ $(function() {
                     code: modifyCode
                 },
                 function(data) {
-                    parseInt(data)
+                    data
                         ? ($(".modal-tab-modify").removeClass("modal-tab-active"),
                           $(".modal-modify").removeClass("active"),
                           $(".modal-modify-content")
@@ -435,7 +435,7 @@ function signIn() {
                 code: $("#input-code").val()
             },
             function(data) {
-                parseInt(data) ? location.replace(server + $("#input-code").val() + "#" + $("#input-name").val()) : ($(".btn-signIn").css("display", "block"), $(".load-signIn").css("display", "none"), $(".notice-inputError").fadeIn());
+                data ? location.replace(server + $("#input-code").val() + "#" + $("#input-name").val()) : ($(".btn-signIn").css("display", "block"), $(".load-signIn").css("display", "none"), $(".notice-inputError").fadeIn());
             }
         );
     }
@@ -447,7 +447,7 @@ function codeSet() {
     code = "";
     for (var i = 0; i < $("#create-slider-codelvl").val(); i++) code += code_random.charAt(Math.floor(Math.random() * code_random.length));
     $.post("proxy.php", { do: "codeSet", code: code }, function(data) {
-        parseInt(data) ? exit : ($("#create-code").val(code), $(".create-preview-code").val(code));
+        data ? exit : ($("#create-code").val(code), $(".create-preview-code").val(code));
     });
     $(".load-code").fadeOut();
     $(".create-preview-code").css("display", "block");
@@ -605,8 +605,8 @@ function openDir(dir) {
     Cookies.set("dir", "./submit/" + Cookies.get("fbId") + "/" + dir + "/", { expires: 1, secure: true });
     $.post("proxy.php", { do: "explorer", dir: Cookies.get("dir") }, function(data) {
         $(".explorer-content").html(data);
-        $(".btn-root").slideDown("slow");
-        $(".btn-zip").fadeIn();
+        $(".btn-root").slideDown();
+        $(".btn-zip").css("display", "block");
     });
 }
 
