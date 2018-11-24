@@ -127,22 +127,22 @@ $(function() {
         $("#create-checkbox-postNow").is(":checked")
             ? $(".form-row-create-post").slideUp()
             : $(".form-row-create-post")
-                  .slideDown('fast')
+                  .slideDown()
                   .css("display", "flex");
         $("#create-checkbox-unlimited").is(":checked")
             ? $(".form-row-create-deadline").slideUp()
             : $(".form-row-create-deadline")
-                  .slideDown('fast')
+                  .slideDown()
                   .css("display", "flex");
         $("#modify-checkbox-postNow").is(":checked")
             ? $(".form-row-modify-post").slideUp()
             : $(".form-row-modify-post")
-                  .slideDown('fast')
+                  .slideDown()
                   .css("display", "flex");
         $("#modify-checkbox-unlimited").is(":checked")
             ? $(".form-row-modify-deadline").slideUp()
             : $(".form-row-modify-deadline")
-                  .slideDown('fast')
+                  .slideDown()
                   .css("display", "flex");
     });
     $(".btn-create-save").click(function() {
