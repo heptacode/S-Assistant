@@ -493,7 +493,11 @@ function statusChangeCallback(response) {
         Cookies.remove("fbValid");
         Cookies.remove("fbId");
         Cookies.remove("fbName");
+        Cookies.remove("name")
         Cookies.remove("ownerFbId");
+        Cookies.remove("dir");
+        Cookies.remove("code");
+        Cookies.remove("code_autoSet")
         clearTimeout(timer_cs);
         clearTimeout(timer_explorer);
         initialize();
