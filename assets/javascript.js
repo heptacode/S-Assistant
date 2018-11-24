@@ -125,24 +125,24 @@ $(function() {
     });
     $("input:checkbox").click(function() {
         $("#create-checkbox-postNow").is(":checked")
-            ? $(".form-row-create-post").fadeOut()
+            ? $(".form-row-create-post").slideUp()
             : $(".form-row-create-post")
-                  .fadeIn()
+                  .slideDown('fast')
                   .css("display", "flex");
         $("#create-checkbox-unlimited").is(":checked")
-            ? $(".form-row-create-deadline").fadeOut()
+            ? $(".form-row-create-deadline").slideUp()
             : $(".form-row-create-deadline")
-                  .fadeIn()
+                  .slideDown('fast')
                   .css("display", "flex");
         $("#modify-checkbox-postNow").is(":checked")
-            ? $(".form-row-modify-post").fadeOut()
+            ? $(".form-row-modify-post").slideUp()
             : $(".form-row-modify-post")
-                  .fadeIn()
+                  .slideDown('fast')
                   .css("display", "flex");
         $("#modify-checkbox-unlimited").is(":checked")
-            ? $(".form-row-modify-deadline").fadeOut()
+            ? $(".form-row-modify-deadline").slideUp()
             : $(".form-row-modify-deadline")
-                  .fadeIn()
+                  .slideDown('fast')
                   .css("display", "flex");
     });
     $(".btn-create-save").click(function() {
