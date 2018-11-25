@@ -581,8 +581,8 @@ table td {
 .submit header {
     position: absolute;
     top: 2.3rem;
-    left: auto;
     right: auto;
+    left: auto;
     width: 100%;
     text-align: center;
     z-index: 2;
@@ -650,8 +650,8 @@ table td {
 .explorer header {
     position: absolute;
     top: 2.3rem;
-    left: auto;
     right: auto;
+    left: auto;
     width: 100%;
     text-align: center;
     z-index: 2;
