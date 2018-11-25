@@ -623,6 +623,7 @@ function download(filename) {
 }
 
 function initialize() {
+    checkLoginState();
     $("html").removeClass("html-infinite");
     if (location.pathname != "/") {
         Cookies.set("code", location.pathname.slice(1), { expires: 1, secure: true });
@@ -660,7 +661,6 @@ function initialize() {
         };
     } else if (!Cookies.get("fbValid")) {
         /* fbValid == false */
-        checkLoginState();
         $(".pf-container").removeClass("pf-container-valid");
         $(".pf-icon").css("display", "none");
         $(".pf-name").css("display", "none");
