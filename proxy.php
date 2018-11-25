@@ -4,7 +4,7 @@ if (!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
     die('<meta http-equiv="refresh" content="0;url=/">');
 }
 date_default_timezone_set('KST');
-$connect = mysqli_connect('hyunwoo.org:3307', 'submit', 'AccountForSubmit', 'submit') or die(0);
+$connect = mysqli_connect('localhost:3307', 'submit', 'AccountForSubmit', 'submit') or die(0);
 $sever = 'https://submit.hyunwoo.org/';
 $ds = DIRECTORY_SEPARATOR;
 
