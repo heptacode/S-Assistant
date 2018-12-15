@@ -30,7 +30,7 @@ window.addEventListener("online", function() {
     GLOBAL VARIABLES
 */
 var server = "https://submit.hyunwoo.org/",
-    cdnserver = "https://submit-cdn.hyunwoo.org/",
+    cdnServer = "https://submit-cdn.hyunwoo.org/",
     modifyCode,
     timer_consoleTable,
     timer_submitValidate,
@@ -548,12 +548,17 @@ function url(url) {
 }
 
 function consoleTable() {
+    sessionValidate();
     $.post("proxy.php", { do: "consoleTable" }, function(response) {
         $(".console-table").html(response);
     });
     timer_consoleTable = setTimeout(function() {
         consoleTable();
     }, 1000);
+}
+
+function sessionValidate() {
+    Cookies.get("fbValid") == undefined || Cookies.get("fbId") == undefined || Cookies.get("fbName") == undefined ? initialize() : null;
 }
 
 function submitValidate() {
@@ -615,11 +620,11 @@ function openDir(dir) {
 }
 
 function remove(target) {
-    confirm(target + "\n\n위 파일이 영구적으로 삭제됩니다.") ? $.post("proxy.php", { do: "unlink", dir: Cookies.get("dir"), target: target }) : NULL;
+    confirm(target + "\n\n위 파일이 영구적으로 삭제됩니다.") ? $.post("proxy.php", { do: "unlink", dir: Cookies.get("dir"), target: target }) : null;
 }
 
-function download(filename) {
-    url(cdnserver + Cookies.get("dir").slice(9) + filename);
+function download(fileName) {
+    url(cdnServer + Cookies.get("dir").slice(9) + fileName);
 }
 
 function initialize() {
@@ -660,6 +665,9 @@ function initialize() {
         };
     } else if (!Cookies.get("fbValid")) {
         /* fbValid == false */
+        clearTimeout(timer_consoleTable);
+        clearTimeout(timer_submitValidate);
+        clearTimeout(timer_explorer);
         $(".pf-container").removeClass("pf-container-valid");
         $(".pf-icon").css("display", "none");
         $(".pf-name").css("display", "none");
