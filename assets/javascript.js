@@ -558,7 +558,7 @@ function consoleTable() {
 }
 
 function sessionValidate() {
-    Cookies.get("fbValid") == undefined || Cookies.get("fbId") == undefined || Cookies.get("fbName") == undefined ? initialize() : null;
+    Cookies.get("fbValid") == undefined || Cookies.get("fbId") == undefined || Cookies.get("fbName") == undefined ? (initialize(), location.replace("/")) : null;
 }
 
 function submitValidate() {
