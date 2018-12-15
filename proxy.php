@@ -1,10 +1,10 @@
 <?
 if (!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
     header('HTTP/1.0 403 Forbidden');
-    die('<meta http-equiv="refresh" content="0;url=/">');
+    exit('<meta http-equiv="refresh" content="0;url=/">');
 }
 date_default_timezone_set('KST');
-$connect = mysqli_connect('localhost:3307', 'submit', 'AccountForSubmit', 'submit') or die(0);
+$connect = mysqli_connect('localhost:3307', 'submit', 'AccountForSubmit', 'submit') or exit(false);
 $sever = 'https://submit.hyunwoo.org/';
 $ds = DIRECTORY_SEPARATOR;
 
@@ -21,7 +21,7 @@ switch ($_POST['do']) {
 
         $query = "INSERT INTO accounts VALUES (NULL, '" . date('Y-m-d H:i:s') . "', '" . $_POST['fbId'] . "', '" . $_POST['fbName'] . "')";
         !$overlap ? mysqli_query($connect, $query) : null;
-        break;
+        exit;
 
     case 'signIn':
         strChk($_POST['name'] . $_POST['code']);
@@ -33,9 +33,7 @@ switch ($_POST['do']) {
                 $exist = true;
             }
         }
-
-        echo $exist ? true : false;
-        break;
+        exit($exist ? true : false);
 
     case 'submitValidate':
         $returnValue = null;
@@ -57,8 +55,7 @@ switch ($_POST['do']) {
 
             }
         }
-        echo $returnValue;
-        break;
+        exit($returnValue);
 
     case 'codeSet':
         $query = "SELECT code FROM forms";
@@ -69,9 +66,7 @@ switch ($_POST['do']) {
                 $overlap = true;
             }
         }
-
-        echo $overlap ? true : false;
-        break;
+        exit($overlap ? true : false);
 
     case 'consoleTable':
         $query = "SELECT * FROM forms ORDER BY forms.Id DESC";
@@ -160,7 +155,7 @@ switch ($_POST['do']) {
         }
 
         echo '</table>';
-        break;
+        exit;
 
     case 'create':
         strChk($_POST['label']);
@@ -173,8 +168,7 @@ switch ($_POST['do']) {
         $dir2 = $dir1 . $_POST['code'] . $ds;
         mkdir($dir1, 0700);
         mkdir($dir2, 0700);
-        echo $result ? true : false;
-        break;
+        exit($result ? true : false);
 
     case 'modify':
         strChk($_POST['label']);
@@ -182,26 +176,24 @@ switch ($_POST['do']) {
         $deadlineTsp = $_POST['deadlineDate'] . ' ' . $_POST['deadlineTime'];
         $query = "UPDATE forms SET label='" . $_POST['label'] . "', max='" . $_POST['max'] . "', postNow='" . $_POST['postNow'] . "', postTsp='" . $postTsp . "', unlimited='" . $_POST['unlimited'] . "', deadlineTsp='" . $deadlineTsp . "', afterDeadline='" . $_POST['afterDeadline'] . "', useFb='" . $_POST['useFb'] . "' WHERE code='" . $_POST['code'] . "'";
         $result = mysqli_query($connect, $query);
-        echo $result ? true : false;
-        break;
+        exit($result ? true : false);
 
     case 'remove':
         $code = $_POST['code'];
         $query = "DELETE FROM forms WHERE code='$code'";
         $result = mysqli_query($connect, $query);
         rmdirAll("." . $ds . "submit" . $ds . $_COOKIE['fbId'] . $ds . $_POST['code'] . $ds);
-        echo $result ? true : false;
-        break;
+        exit($result ? true : false);
 
     case 'ownerFbId':
         $query = "SELECT * FROM forms";
         $result = mysqli_query($connect, $query);
         while ($data = mysqli_fetch_array($result)) {
             if ($data['code'] == $_POST["code"]) {
-                die($data['owner']);
+                exit($data['owner']);
             }
         }
-        break;
+        exit;
 
     case 'explorer':
         $files = scandir($_POST['dir']);
@@ -222,11 +214,11 @@ switch ($_POST['do']) {
             $target = "'" . $files[$i] . "'";
             echo $exist ? '<div class="folder-group" onclick=openDir("' . $files[$i] . '")><div class="folder"></div><div class="folder-name">' . $label . '</div></div>' : '<div class="file-group"><div class="file-remove" onclick="remove(' . $target . ')"></div><div class="file" onclick="download(' . $target . ')"></div><div class="file-name" onclick="download(' . $target . ')">' . $files[$i] . '</div></div>';
         }
-        break;
+        exit;
 
     case 'unlink':
         rename($_POST['dir'] . $_POST['target'], "." . $ds . "trashes" . $ds . $_POST['target']);
-        break;
+        exit;
 
     case 'zip':
         $zip = new ZipArchive;
@@ -239,10 +231,8 @@ switch ($_POST['do']) {
             }
             $zip->close();
             echo $zip_name;
-        } else {
-            die();
         }
-        break;
+        exit ;
 }
 
 /*
@@ -252,7 +242,7 @@ if (!empty($_FILES)) {
     $deny = array('php', 'htaccess');
     $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
     if (in_array($ext, $deny)) {
-        die(0);
+        exit(false);
     }
 
     $dir1 = "." . $ds . "submit" . $ds . $_COOKIE['ownerFbId'] . $ds;
@@ -281,7 +271,7 @@ function strChk($str)
     $deny = array('!', '@', '$', '%', '^', '&', '*', '`', '~', '\\', '/', '\/', '<', '>', '|', ':', ';');
     for ($i = 0; $i < count($deny); $i++) {
         if (strpos($str, $deny[$i]) !== false) {
-            die(0);
+            exit(false);
         }
     }
 }
