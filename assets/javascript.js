@@ -32,7 +32,7 @@ window.addEventListener("online", function() {
 var server = "https://submit.hyunwoo.org/",
     cdnserver = "https://submit-cdn.hyunwoo.org/",
     modifyCode,
-    timer_cs,
+    timer_consoleTable,
     timer_submitValidate,
     timer_explorer;
 
@@ -55,7 +55,7 @@ $(function() {
         signIn();
     });
     $(".btn-explorer").click(function() {
-        clearTimeout(timer_cs);
+        clearTimeout(timer_consoleTable);
         $(".field").slideUp();
         $(".explorer").fadeIn("slow");
         Cookies.set("dir", "./submit/" + Cookies.get("fbId") + "/", { expires: 1, secure: true });
@@ -71,7 +71,7 @@ $(function() {
         $(".btn-root").css("display", "none");
         $(".btn-zip").css("display", "none");
         $("html").removeClass("html-infinite");
-        cs();
+        consoleTable();
     });
     $(".btn-root").click(function() {
         Cookies.set("dir", "./submit/" + Cookies.get("fbId") + "/", { expires: 1, secure: true });
@@ -498,7 +498,7 @@ function statusChangeCallback(response) {
         Cookies.remove("dir");
         Cookies.remove("code");
         Cookies.remove("code_autoSet");
-        clearTimeout(timer_cs);
+        clearTimeout(timer_consoleTable);
         clearTimeout(timer_explorer);
         initialize();
     }
@@ -547,12 +547,12 @@ function url(url) {
     return false;
 }
 
-function cs() {
-    $.post("proxy.php", { do: "console" }, function(response) {
+function consoleTable() {
+    $.post("proxy.php", { do: "consoleTable" }, function(response) {
         $(".console-table").html(response);
     });
-    timer_cs = setTimeout(function() {
-        cs();
+    timer_consoleTable = setTimeout(function() {
+        consoleTable();
     }, 1000);
 }
 
@@ -694,7 +694,7 @@ function initialize() {
         $(".submit").css("display", "none");
         $(".explorer").css("display", "none");
         $(".btn-create").css("display", "block");
-        cs();
+        consoleTable();
         clearTimeout(timer_explorer);
     }
     if (!Cookies.get("ownerFbId")) {
