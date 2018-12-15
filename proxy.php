@@ -73,7 +73,7 @@ switch ($_POST['do']) {
         echo $overlap ? true : false;
         break;
 
-    case 'console':
+    case 'consoleTable':
         $query = "SELECT * FROM forms ORDER BY forms.Id DESC";
         $result = mysqli_query($connect, $query);
         $nodata = true;
