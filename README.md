@@ -1,5 +1,9 @@
 # S-Assistant
 Sunrin Digital Contents Contest 2018 | S-Assistant
 
-<script src="https://raw.githubusercontent.com/munen/pdf-viewer/master/dist/pdf-viewer.js"></script>
-<pdf-viewer src="https://github.com/heptacode/S-Assistant/raw/master/%EC%9B%B9_10407_%EA%B9%80%ED%98%84%EC%9A%B0_S-Assistant.pdf" width="640"></pdf-viewer>
+<object data="https://github.com/heptacode/S-Assistant/raw/master/%EC%9B%B9_10407_%EA%B9%80%ED%98%84%EC%9A%B0_S-Assistant.pdf" type="application/pdf" width="700px" height="700px">
+    <embed src="https://github.com/heptacode/S-Assistant/raw/master/%EC%9B%B9_10407_%EA%B9%80%ED%98%84%EC%9A%B0_S-Assistant.pdf">
+        <p>이 브라우저에서는 PDF 미리보기를 제공하지 않습니다.</p>
+    </embed>
+</object>
+
