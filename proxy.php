@@ -232,7 +232,7 @@ switch ($_POST['do']) {
             $zip->close();
             echo $zip_name;
         }
-        exit ;
+        exit;
 }
 
 /*
