@@ -22,7 +22,7 @@ $ds = DIRECTORY_SEPARATOR;
     mkdir($dir1, 0700);
     mkdir($dir2, 0700);
     $tempFile = $_FILES['file']['tmp_name'];
-    $targetFile = dirname(__FILE__) . $ds . $dir2 . $ds . pathinfo($_FILES['file']['name'], PATHINFO_FILENAME) . '_' . ($_COOKIE['fbValid'] ? $_COOKIE['fbName'] : $_COOKIE['name']) . '.' . $ext;
+    $targetFile = dirname(__FILE__) . $ds . $dir2 . $ds . ($_COOKIE['fbValid'] ? $_COOKIE['fbName'] : $_COOKIE['name']) . '_' . pathinfo($_FILES['file']['name'], PATHINFO_FILENAME) . '_' . date('m월d일H시i분s초') . '.' . $ext;
     move_uploaded_file($tempFile, $targetFile);
     $query = "SELECT submits FROM forms WHERE code='" . $_COOKIE['code'] . "'";
     $result = mysqli_query($connect, $query);
