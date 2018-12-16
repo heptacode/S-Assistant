@@ -18,7 +18,6 @@ switch ($_POST['do']) {
                 $overlap = true;
             }
         }
-
         $query = "INSERT INTO accounts VALUES (NULL, '" . date('Y-m-d H:i:s') . "', '" . $_POST['fbId'] . "', '" . $_POST['fbName'] . "')";
         !$overlap ? mysqli_query($connect, $query) : null;
         exit;
@@ -52,7 +51,6 @@ switch ($_POST['do']) {
                 } else {
                     $returnValue = $data['label'];
                 }
-
             }
         }
         exit($returnValue);
@@ -98,7 +96,6 @@ switch ($_POST['do']) {
                 } else {
                     $create = date('Y. m. d', $data['TIME']);
                 }
-
                 $diff = strtotime($data['postTsp']) - time();
                 if ($diff < 0 || $data['postNow']) {
                     $post = '게시됨';
@@ -115,7 +112,6 @@ switch ($_POST['do']) {
                 } else {
                     $post = date('Y. m. d', $diff);
                 }
-
                 $diff = strtotime($data['deadlineTsp']) - time();
                 if ($diff < 0) {
                     if ($data['unlimited']) {
@@ -137,7 +133,6 @@ switch ($_POST['do']) {
                 } else {
                     $expire = date('Y. m. d', $diff);
                 }
-
                 $postTsp = explode(' ', $data['postTsp']);
                 $deadlineTsp = explode(' ', $data['deadlineTsp']);
                 $data['afterDeadline'] ? $afterDeadline = '허용' : $afterDeadline = '금지';
@@ -145,7 +140,6 @@ switch ($_POST['do']) {
                 if ($data['owner'] == $_COOKIE["fbId"]) {
                     $owner = '소유자';
                 }
-
                 $modify = "'" . $data['label'] . "'," . $data['max'] . "," . $data['postNow'] . "," . "'" . $postTsp[0] . "'," . "'" . $postTsp[1] . "'," . $data['unlimited'] . "," . "'" . $deadlineTsp[0] . "'," . "'" . $deadlineTsp[1] . "'," . $data['afterDeadline'] . "," . $data['useFb'] . ",'" . $data['code'] . "'";
                 echo '<tr><th>' . $data['label'] . '<br><button class="btn-modify" onclick="modify(' . $modify . ')" type="button">관리</button></th><td><button class="btn-code" onclick=copy("https://submit.hyunwoo.org/' . $data['code'] . '") type="button">' . $data['code'] . '</button></td><td>' . $data['submits'] . '/' . $data['max'] . '</td><td class="td-auto">' . $create . '</td><td class="td-auto">' . $post . '</td><td class="td-auto">' . $expire . '</td><td class="td-auto">' . $afterDeadline . '</td><td class="td-auto">' . $usefb . '</td><td class="td-auto">' . $owner . '</td></tr>';
             }
@@ -153,7 +147,6 @@ switch ($_POST['do']) {
         if ($nodata) {
             echo '<div class="notice-nodata">+ 버튼을 눌러 새로운 폼을 생성하세요!</div>';
         }
-
         echo '</table>';
         exit;
 
@@ -201,7 +194,6 @@ switch ($_POST['do']) {
             if (strpos($files[$i], '.DS_Store') !== false || strpos($files[$i], '@eaDir') !== false) {
                 continue;
             }
-
             $exist = false;
             $query = "SELECT * FROM forms";
             $result = mysqli_query($connect, $query);
@@ -252,7 +244,6 @@ if (!empty($_FILES)) {
     $tempFile = $_FILES['file']['tmp_name'];
     $targetFile = dirname(__FILE__) . $ds . $dir2 . $ds . pathinfo($_FILES['file']['name'], PATHINFO_FILENAME) . '_' . ($_COOKIE['fbValid'] ? $_COOKIE['fbName'] : $_COOKIE['name']) . '.' . $ext;
     move_uploaded_file($tempFile, $targetFile);
-
     $query = "SELECT submits FROM forms WHERE code='" . $_COOKIE['code'] . "'";
     $result = mysqli_query($connect, $query);
     $data = mysqli_fetch_array($result);
