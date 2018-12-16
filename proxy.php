@@ -8,6 +8,35 @@ $connect = mysqli_connect('localhost:3307', 'submit', 'AccountForSubmit', 'submi
 $sever = 'https://submit.hyunwoo.org/';
 $ds = DIRECTORY_SEPARATOR;
 
+/*
+클라이언트 파일 수신 처리
+ */
+ if (!empty($_FILES)) {
+    $deny = array('php', 'htaccess');
+    $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+    if (in_array($ext, $deny)) {
+        exit(false);
+    }
+    $dir1 = "." . $ds . "submit" . $ds . $_COOKIE['ownerFbId'] . $ds;
+    $dir2 = $dir1 . $_COOKIE['code'] . $ds;
+    mkdir($dir1, 0700);
+    mkdir($dir2, 0700);
+    $tempFile = $_FILES['file']['tmp_name'];
+    $targetFile = dirname(__FILE__) . $ds . $dir2 . $ds . pathinfo($_FILES['file']['name'], PATHINFO_FILENAME) . '_' . ($_COOKIE['fbValid'] ? $_COOKIE['fbName'] : $_COOKIE['name']) . '.' . $ext;
+    move_uploaded_file($tempFile, $targetFile);
+    $query = "SELECT submits FROM forms WHERE code='" . $_COOKIE['code'] . "'";
+    $result = mysqli_query($connect, $query);
+    $data = mysqli_fetch_array($result);
+    $submits = ++$data['submits'];
+    $query = "UPDATE forms SET submits='" . $submits . "' WHERE code='" . $_COOKIE['code'] . "'";
+    mysqli_query($connect, $query);
+    mysqli_close($connect);
+    exit;
+}
+
+/*
+POST 요청 처리
+ */
 switch ($_POST['do']) {
     case 'fbLogin':
         $overlap = false;
@@ -227,30 +256,6 @@ switch ($_POST['do']) {
         exit;
 }
 
-/*
-클라이언트 파일 수신 처리
- */
-if (!empty($_FILES)) {
-    $deny = array('php', 'htaccess');
-    $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
-    if (in_array($ext, $deny)) {
-        exit(false);
-    }
-
-    $dir1 = "." . $ds . "submit" . $ds . $_COOKIE['ownerFbId'] . $ds;
-    $dir2 = $dir1 . $_COOKIE['code'] . $ds;
-    mkdir($dir1, 0700);
-    mkdir($dir2, 0700);
-    $tempFile = $_FILES['file']['tmp_name'];
-    $targetFile = dirname(__FILE__) . $ds . $dir2 . $ds . pathinfo($_FILES['file']['name'], PATHINFO_FILENAME) . '_' . ($_COOKIE['fbValid'] ? $_COOKIE['fbName'] : $_COOKIE['name']) . '.' . $ext;
-    move_uploaded_file($tempFile, $targetFile);
-    $query = "SELECT submits FROM forms WHERE code='" . $_COOKIE['code'] . "'";
-    $result = mysqli_query($connect, $query);
-    $data = mysqli_fetch_array($result);
-    $submits = ++$data['submits'];
-    $query = "UPDATE forms SET submits='" . $submits . "' WHERE code='" . $_COOKIE['code'] . "'";
-    mysqli_query($connect, $query);
-}
 mysqli_close($connect);
 
 /*
