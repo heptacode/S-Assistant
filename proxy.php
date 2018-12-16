@@ -140,8 +140,8 @@ switch ($_POST['do']) {
 
                 $postTsp = explode(' ', $data['postTsp']);
                 $deadlineTsp = explode(' ', $data['deadlineTsp']);
-                $data['afterDeadline'] ? $afterDeadline = 허용 : $afterDeadline = 금지;
-                $data['useFb'] ? $usefb = 사용 : $usefb = 안함;
+                $data['afterDeadline'] ? $afterDeadline = '허용' : $afterDeadline = '금지';
+                $data['useFb'] ? $usefb = '사용' : $usefb = '안함';
                 if ($data['owner'] == $_COOKIE["fbId"]) {
                     $owner = '소유자';
                 }
