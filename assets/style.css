@@ -823,26 +823,35 @@ table td {
 .file:active {
     opacity: 0.5;
 }
-.file-zip {
-    background: url("icon-zip.png") no-repeat center;
+.file-ai {
+    background: url("icons/ai.svg") no-repeat center;
 }
-.file-txt {
-    background: url("icon-txt.png") no-repeat center;
+.file-aac, .file-aiff, .file-flac, .file-mp3, .file-m4a, .file-m4r, .file-m4p, .file-ogg, .file-wav, .file-wma, .file-webm {
+    background: url("icons/audio.png") no-repeat center;
 }
-.file-pdf {
-    background: url("icon-pdf.svg") no-repeat center;
-}
-.file-docx {
-    background: url("icon-docx.svg") no-repeat center;
-}
-.file-xlsx {
-    background: url("icon-xlsx.svg") no-repeat center;
-}
-.file-pptx {
-    background: url("icon-pptx.svg") no-repeat center;
+.file-doc, .file-docx {
+    background: url("icons/docx.svg") no-repeat center;
 }
 .file-hwp {
-    background: url("icon-hwp.png") no-repeat center;
+    background: url("icons/hwp.png") no-repeat center;
+}
+.file-txt, .file-rtf {
+    background: url("icons/txt.png") no-repeat center;
+}
+.file-pdf {
+    background: url("icons/pdf.svg") no-repeat center;
+}
+.file-psd {
+    background: url("icons/psd.svg") no-repeat center;
+}
+.file-ppt, .file-ppsx, .file-pptx {
+    background: url("icons/pptx.svg") no-repeat center;
+}
+.file-xls, .file-xlsx {
+    background: url("icons/xlsx.svg") no-repeat center;
+}
+.file-zip {
+    background: url("icons/zip.png") no-repeat center;
 }
 .file {
     background-size: cover;
