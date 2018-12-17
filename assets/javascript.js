@@ -440,12 +440,12 @@ function signIn() {
         );
     }
 }
-var code_random = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+var randomString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 function codeSet() {
     $(".load-code").fadeIn();
     $(".create-preview-code").css("display", "none");
     code = "";
-    for (var i = 0; i < $("#create-slider-codelvl").val(); i++) code += code_random.charAt(Math.floor(Math.random() * code_random.length));
+    for (var i = 0; i < $("#create-slider-codelvl").val(); i++) code += randomString.charAt(Math.floor(Math.random() * randomString.length));
     $.post("proxy.php", { do: "codeSet", code: code }, function(response) {
         response ? exit : ($("#create-code").val(code), $(".create-preview-code").val(code));
     });
