@@ -610,6 +610,10 @@ function explorer() {
     }, 1000);
 }
 
+function fileNameView(index, fileName){
+    $("#"+index).text(fileName);
+}
+
 function openDir(dir) {
     Cookies.set("dir", "./submit/" + Cookies.get("fbId") + "/" + dir + "/", { expires: 1, secure: true });
     $.post("proxy.php", { do: "explorer", dir: Cookies.get("dir") }, function(response) {
