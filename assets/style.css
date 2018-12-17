@@ -798,7 +798,7 @@ table td {
     word-break: break-all;
 }
 .file-remove {
-    background: url("icon-remove.svg") no-repeat center/contain;
+    background: url("icons/remove.svg") no-repeat center/contain;
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -808,20 +808,7 @@ table td {
     cursor: pointer;
 }
 .file {
-    display: block;
-    background: url("icon-default.png") no-repeat center;
-    background-size: cover;
-    width: 60px;
-    height: 60px;
-    margin: auto;
-    cursor: pointer;
-    -webkit-transition: 0.15s;
-    -moz-transition: 0.15s;
-    -o-transition: 0.15s;
-    transition: 0.15s;
-}
-.file:active {
-    opacity: 0.5;
+    background: url("icons/default.png") no-repeat center;
 }
 .file-ai {
     background: url("icons/ai.svg") no-repeat center;
@@ -854,7 +841,19 @@ table td {
     background: url("icons/zip.png") no-repeat center;
 }
 .file {
+    display: block;
     background-size: cover;
+    width: 60px;
+    height: 60px;
+    margin: auto;
+    cursor: pointer;
+    -webkit-transition: 0.15s;
+    -moz-transition: 0.15s;
+    -o-transition: 0.15s;
+    transition: 0.15s;
+}
+.file:active {
+    opacity: 0.5;
 }
 .folder-name,
 .file-name {
