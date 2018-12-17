@@ -233,7 +233,7 @@ switch ($_POST['do']) {
                 }
             }
             $target = "'" . $files[$i] . "'";
-            echo $exist ? '<div class="folder-group" onclick=openDir("' . $files[$i] . '")><div class="folder"></div><div class="folder-name">' . $label . '</div></div>' : '<div class="file-group"><div class="file-remove" onclick="remove(' . $target . ')"></div><div class="file" onclick="download(' . $target . ')"></div><div class="file-name" onclick="download(' . $target . ')">' . $files[$i] . '</div></div>';
+            echo $exist ? '<div class="folder-group" onclick=openDir("' . $files[$i] . '")><div class="folder"></div><div class="folder-name">' . $label . '</div></div>' : '<div class="file-group"><div class="file-remove" onclick="remove(' . $target . ')"></div><div class="file file-'. pathinfo($files[$i], PATHINFO_EXTENSION) .'" onclick="download(' . $target . ')"></div><div class="file-name" onclick="download(' . $target . ')">' . $files[$i] . '</div></div>';
         }
         exit;
 
