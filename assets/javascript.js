@@ -32,10 +32,10 @@ window.addEventListener("online", function() {
 var server = "https://submit.hyunwoo.org/",
     cdnServer = "https://submit-cdn.hyunwoo.org/",
     modifyCode,
-    timer_consoleTable,
-    timer_submitValidate,
-    timer_explorer;
-
+    timer_consoleTable = setInterval(consoleTable, 1000),
+    timer_submitValidate = setInterval(submitValidate, 1000),
+    timer_explorer = setInterval(explorer, 1000);
+    
 /*
     jQuery Functions
 */
@@ -55,31 +55,37 @@ $(function() {
         signIn();
     });
     $(".btn-explorer").click(function() {
-        clearTimeout(timer_consoleTable);
+        clearInterval(timer_consoleTable);
         $(".field").slideUp();
         $(".explorer").fadeIn("slow");
         Cookies.set("dir", "./submit/" + Cookies.get("fbId") + "/", { expires: 1, secure: true });
+        $(".explorer-title").text("S-Assistant");
         $(".btn-root").css("display", "none");
-        $(".btn-zip").css("display", "none");
+        $(".explorer-btn-group").css("display", "none");
         $("html").addClass("html-infinite");
-        explorer();
+        timer_explorer = setInterval(explorer, 1000);
     });
     $(".btn-console").click(function() {
-        clearTimeout(timer_explorer);
+        clearInterval(timer_explorer);
         $(".field").slideDown();
         $(".explorer").fadeOut();
+        $(".explorer-title").text("S-Assistant");
         $(".btn-root").css("display", "none");
-        $(".btn-zip").css("display", "none");
+        $(".explorer-btn-group").css("display", "none");
         $("html").removeClass("html-infinite");
-        consoleTable();
+        timer_consoleTable = setInterval(consoleTable, 1000);
     });
     $(".btn-root").click(function() {
         Cookies.set("dir", "./submit/" + Cookies.get("fbId") + "/", { expires: 1, secure: true });
         $.post("proxy.php", { do: "explorer", dir: Cookies.get("dir") }, function(response) {
             $(".explorer-content").html(response);
         });
+        $(".explorer-title").text("S-Assistant");
         $(".btn-root").slideUp();
-        $(".btn-zip").css("display", "none");
+        $(".explorer-btn-group").css("display", "none");
+    });
+    $(".btn-add").click(function() {
+        window.open(server + Cookies.get("code"));
     });
     $(".btn-zip").click(function() {
         $.post("proxy.php", { do: "zip", dir: Cookies.get("dir") }, function(response) {
@@ -245,6 +251,7 @@ $(function() {
                   .prop("disabled", false);
     });
     $(".btn-modify-save").click(function() {
+        $("#row_" + modifyCode).addClass("trModify");
         $(this)
             .prop("disabled", "disabled")
             .addClass("btn-save-disabled");
@@ -367,7 +374,8 @@ $(function() {
                 },
                 function(response) {
                     response
-                        ? ($(".modal-tab-modify").removeClass("modal-tab-active"),
+                        ? ($("#row_" + modifyCode).addClass("trRemove"),
+                          $(".modal-tab-modify").removeClass("modal-tab-active"),
                           $(".modal-modify").removeClass("active"),
                           $(".modal-modify-content")
                               .addClass("slideDown")
@@ -498,8 +506,8 @@ function statusChangeCallback(response) {
         Cookies.remove("dir");
         Cookies.remove("code");
         Cookies.remove("code_autoSet");
-        clearTimeout(timer_consoleTable);
-        clearTimeout(timer_explorer);
+        clearInterval(timer_consoleTable);
+        clearInterval(timer_explorer);
         initialize();
     }
 }
@@ -550,11 +558,8 @@ function url(url) {
 function consoleTable() {
     sessionValidate();
     $.post("proxy.php", { do: "consoleTable" }, function(response) {
-        $(".console-table").html(response);
+        response ? $(".console-table").html('<table><thead><tr><th>레이블</th><th>코드</th><th>제출</th><th class="td-auto">생성</th><th class="td-auto">게시</th><th class="td-auto">마감</th><th class="td-auto">마감 후 제출</th><th class="td-auto">FB 인증</th><th class="td-auto">권한</th></tr></thead><tbody>' + response + "</tbody></table>") : $(".console-table").html('<div class="notice-nodata">+ 버튼을 눌러 새로운 폼을 생성하세요!</div>');
     });
-    timer_consoleTable = setTimeout(function() {
-        consoleTable();
-    }, 1000);
 }
 
 function sessionValidate() {
@@ -596,30 +601,28 @@ function submitValidate() {
                 $(".notice-submit").css("display", "none");
         }
     });
-    timer_submitValidate = setTimeout(function() {
-        submitValidate();
-    }, 1000);
 }
 
 function explorer() {
     $.post("proxy.php", { do: "explorer", dir: Cookies.get("dir") }, function(response) {
         $(".explorer-content").html(response);
     });
-    timer_explorer = setTimeout(function() {
-        explorer();
-    }, 1000);
 }
 
-function fileNameView(index, fileName){
-    $("#fileIndex"+index).text(fileName);
+function fileNameView(index, fileName) {
+    $("#fileIndex" + index).text(fileName);
 }
 
 function openDir(dir) {
+    $.post("proxy.php", { do: "fetchLabel", code: dir }, function(response) {
+        $(".explorer-title").text(response);
+    });
     Cookies.set("dir", "./submit/" + Cookies.get("fbId") + "/" + dir + "/", { expires: 1, secure: true });
+    Cookies.set("code", dir, { expires: 1, secure: true });
     $.post("proxy.php", { do: "explorer", dir: Cookies.get("dir") }, function(response) {
         $(".explorer-content").html(response);
         $(".btn-root").slideDown();
-        $(".btn-zip").css("display", "block");
+        $(".explorer-btn-group").css("display", "flex");
     });
 }
 
@@ -663,15 +666,15 @@ function initialize() {
                 $(".submit-subtitle").text(Cookies.get("name"));
             }
         }
-        submitValidate();
+        timer_submitValidate = setInterval(submitValidate, 1000);
         window.onbeforeunload = function() {
             return true;
         };
     } else if (!Cookies.get("fbValid")) {
         /* fbValid == false */
-        clearTimeout(timer_consoleTable);
-        clearTimeout(timer_submitValidate);
-        clearTimeout(timer_explorer);
+        clearInterval(timer_consoleTable);
+        clearInterval(timer_submitValidate);
+        clearInterval(timer_explorer);
         $(".pf-container").removeClass("pf-container-valid");
         $(".pf-icon").css("display", "none");
         $(".pf-name").css("display", "none");
@@ -706,8 +709,7 @@ function initialize() {
         $(".submit").css("display", "none");
         $(".explorer").css("display", "none");
         $(".btn-create").css("display", "block");
-        consoleTable();
-        clearTimeout(timer_explorer);
+        clearInterval(timer_explorer);
     }
     if (!Cookies.get("ownerFbId")) {
         $.post("proxy.php", { do: "ownerFbId", code: Cookies.get("code") }, function(response) {

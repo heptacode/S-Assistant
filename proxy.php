@@ -11,7 +11,7 @@ $ds = DIRECTORY_SEPARATOR;
 /*
 클라이언트 파일 수신 처리
  */
- if (!empty($_FILES)) {
+if (!empty($_FILES)) {
     $deny = array('php', 'htaccess');
     $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
     if (in_array($ext, $deny)) {
@@ -99,13 +99,8 @@ switch ($_POST['do']) {
         $query = "SELECT * FROM forms ORDER BY forms.Id DESC";
         $result = mysqli_query($connect, $query);
         $nodata = true;
-        $thead = false;
         while ($data = mysqli_fetch_array($result)) {
             if ($data['owner'] == $_COOKIE["fbId"]) {
-                if (!$thead) {
-                    echo '<table><tr><th>레이블</th><th>코드</th><th>제출</th><th class="td-auto">생성</th><th class="td-auto">게시</th><th class="td-auto">마감</th><th class="td-auto">마감 후 제출</th><th class="td-auto">FB 인증</th><th class="td-auto">권한</th></tr>';
-                    $thead = true;
-                }
                 $nodata = false;
                 $diff = time() - strtotime($data['createTsp']);
                 $s = 60;
@@ -170,13 +165,12 @@ switch ($_POST['do']) {
                     $owner = '소유자';
                 }
                 $modify = "'" . $data['label'] . "'," . $data['max'] . "," . $data['postNow'] . "," . "'" . $postTsp[0] . "'," . "'" . $postTsp[1] . "'," . $data['unlimited'] . "," . "'" . $deadlineTsp[0] . "'," . "'" . $deadlineTsp[1] . "'," . $data['afterDeadline'] . "," . $data['useFb'] . ",'" . $data['code'] . "'";
-                echo '<tr><th>' . $data['label'] . '<br><button class="btn-modify" onclick="modify(' . $modify . ')" type="button">관리</button></th><td><button class="btn-code" onclick=copy("https://submit.hyunwoo.org/' . $data['code'] . '") type="button">' . $data['code'] . '</button></td><td>' . $data['submits'] . '/' . $data['max'] . '</td><td class="td-auto">' . $create . '</td><td class="td-auto">' . $post . '</td><td class="td-auto">' . $expire . '</td><td class="td-auto">' . $afterDeadline . '</td><td class="td-auto">' . $usefb . '</td><td class="td-auto">' . $owner . '</td></tr>';
+                echo '<tr id="row_' . $data['code'] . '"><th>' . $data['label'] . '<br><button class="btn-modify" onclick="modify(' . $modify . ')" type="button">관리</button></th><td><button class="btn-code" onclick=copy("https://submit.hyunwoo.org/' . $data['code'] . '") type="button">' . $data['code'] . '</button></td><td>' . $data['submits'] . '/' . $data['max'] . '</td><td class="td-auto">' . $create . '</td><td class="td-auto">' . $post . '</td><td class="td-auto">' . $expire . '</td><td class="td-auto">' . $afterDeadline . '</td><td class="td-auto">' . $usefb . '</td><td class="td-auto">' . $owner . '</td></tr>';
             }
         }
         if ($nodata) {
-            echo '<div class="notice-nodata">+ 버튼을 눌러 새로운 폼을 생성하세요!</div>';
+            exit(false);
         }
-        echo '</table>';
         exit;
 
     case 'create':
@@ -217,6 +211,17 @@ switch ($_POST['do']) {
         }
         exit;
 
+    case 'fetchLabel':
+        $returnValue = null;
+        $query = "SELECT * FROM forms";
+        $result = mysqli_query($connect, $query);
+        while ($data = mysqli_fetch_array($result)) {
+            if ($_POST['code'] == $data['code']) {
+                $returnValue = $data['label'];
+            }
+        }
+        exit($returnValue);
+
     case 'explorer':
         $files = scandir($_POST['dir']);
         for ($i = 2; $files[$i]; $i++) {
@@ -233,10 +238,9 @@ switch ($_POST['do']) {
                 }
             }
             $target = "'" . $files[$i] . "'";
-
             $fileName = $files[$i];
-            strlen($fileName) <= 30 ? $fileName = '[' . strtoupper(substr($fileName, strrpos($files[$i], ".")+1)) . ']<br>' . $fileName : $fileName = '[' . strtoupper(substr($fileName, strrpos($files[$i], ".")+1)) . ']<br>' . iconv_substr($fileName, 0, 30, 'utf-8') . '&ctdot;';
-            echo $exist ? '<div class="folder-group" onclick=openDir("' . $files[$i] . '")><div class="folder"></div><div class="folder-name">' . $label . '</div></div>' : '<div class="file-group"><div class="file-remove" onclick="remove(' . $target . ')"></div><div class="file file-'. pathinfo($files[$i], PATHINFO_EXTENSION) .'" onclick="download(' . $target . ')"></div><div class="file-name" id="fileIndex' . $i . '" onclick="download(' . $target . ')" onmouseover="fileNameView(' . $i . ',' . $target . ')">' . $fileName . '</div></div>';
+            strlen($fileName) <= 30 ? $fileName = '[' . strtoupper(substr($fileName, strrpos($files[$i], ".") + 1)) . ']<br>' . $fileName : $fileName = '[' . strtoupper(substr($fileName, strrpos($files[$i], ".") + 1)) . ']<br>' . iconv_substr($fileName, 0, 30, 'utf-8') . '&ctdot;';
+            echo $exist ? '<div class="folder-group" onclick=openDir("' . $files[$i] . '")><div class="folder"></div><div class="folder-name">' . $label . '</div></div>' : '<div class="file-group"><div class="file-remove" onclick="remove(' . $target . ')"></div><div class="file file-' . pathinfo($files[$i], PATHINFO_EXTENSION) . '" onclick="download(' . $target . ')"></div><div class="file-name" id="fileIndex' . $i . '" onclick="download(' . $target . ')" onmouseover="fileNameView(' . $i . ',' . $target . ')">' . $fileName . '</div></div>';
         }
         exit;
 

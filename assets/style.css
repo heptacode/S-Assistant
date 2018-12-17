@@ -51,7 +51,7 @@ html {
     }
 }
 body {
-    margin: 0;
+    all: unset;
 }
 a {
     color: #007bff;
@@ -536,10 +536,20 @@ table th,
 table td {
     padding: 0.75rem;
     vertical-align: middle;
-    border: 1px solid rgb(222, 226, 230);
+    border-top: 1px solid rgb(222, 226, 230);
 }
 table td {
     word-break: break-all;
+}
+.trModify {
+    background: #E8EFFE;
+    pointer-events: none;
+    cursor: default;
+}
+.trRemove {
+    background: #e05559;    
+    pointer-events: none;
+    cursor: not-allowed;
 }
 @media only screen and (max-width: 760px) {
     .td-auto {
@@ -688,15 +698,20 @@ table td {
 .btn-root:hover {
     color: rgba(255, 255, 255, 0.5);
 }
-.btn-zip {
+.explorer-btn-group {
     display: none;
+    align-items: center;
+    justify-content: center;
     position: absolute;
     top: 3rem;
     left: 1rem;
-    padding: 4px 16px;
-    border: 1px solid white;
-    font-size: 18px;
-    font-weight: bold;
+    border: .5px solid white;
+    border-radius: 5px;
+}
+.btn-add, .btn-zip {
+    border: .5px solid white;
+    padding: 7px 18px;
+    font-size: 16px;
     color: white;
     cursor: pointer;
     -webkit-transition: 0.15s;
@@ -704,7 +719,13 @@ table td {
     -o-transition: 0.15s;
     transition: 0.15s;
 }
-.btn-zip:hover {
+.btn-add {
+    border-radius: 5px 0 0 5px;
+}
+.btn-zip {
+    border-radius: 0 5px 5px 0;
+}
+.btn-add:hover, .btn-zip:hover {
     color: rgba(255, 255, 255, 0.5);
 }
 .explorer-container {
