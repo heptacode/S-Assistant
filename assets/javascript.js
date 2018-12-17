@@ -610,7 +610,7 @@ function explorer() {
 }
 
 function fileNameView(index, fileName) {
-    $("#fileIndex" + index).text(fileName);
+    $("#fileNameIndex_" + index).text(fileName);
 }
 
 function openDir(dir) {
@@ -626,8 +626,8 @@ function openDir(dir) {
     });
 }
 
-function remove(target) {
-    confirm(target + "\n\n위 파일이 영구적으로 삭제됩니다.") ? $.post("proxy.php", { do: "unlink", dir: Cookies.get("dir"), target: target }) : null;
+function remove(index, target) {
+    confirm(target + "\n\n위 파일이 영구적으로 삭제됩니다.") ? ($("#fileGroupIndex_" + index).fadeOut(), $.post("proxy.php", { do: "unlink", dir: Cookies.get("dir"), target: target })) : null;
 }
 
 function download(fileName) {
