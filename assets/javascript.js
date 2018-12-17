@@ -611,7 +611,7 @@ function explorer() {
 }
 
 function fileNameView(index, fileName){
-    $("#"+index).text(fileName);
+    $("#fileIndex"+index).text(fileName);
 }
 
 function openDir(dir) {
