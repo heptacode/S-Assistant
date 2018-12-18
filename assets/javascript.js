@@ -32,10 +32,11 @@ window.addEventListener("online", function() {
 var server = "https://submit.hyunwoo.org/",
     cdnServer = "https://submit-cdn.hyunwoo.org/",
     modifyCode,
-    timer_consoleTable = setInterval(consoleTable, 1000),
-    timer_submitValidate = setInterval(submitValidate, 1000),
-    timer_explorer = setInterval(explorer, 1000);
-    
+    timer_boardTable,
+    timer_consoleTable,
+    timer_submitValidate,
+    timer_explorer;
+
 /*
     jQuery Functions
 */
@@ -47,33 +48,66 @@ $(function() {
         window.close();
         location.replace("about:blank");
     });
-    $(".btn-restore").click(function() {
+    $(".board").click(function() {
+        boardTable();
+        timer_boardTable = setInterval(boardTable, 2000);
+        $(".board")
+            .html("읽어들이는 중")
+            .addClass("board-active");
+    });
+    $(".btn-board-close").click(function() {
         $(this).fadeOut();
-        checkLoginState();
+        clearInterval(timer_boardTable);
+        $(".board")
+            .html('<div class="board-default"><div class="board-icon"></div><div>보드</div></div>')
+            .removeClass("board-active");
+        for(var time = 0; time <= 500; time += 100){
+            setTimeout(function() {
+                $(".btn-board-close").fadeOut();
+                clearInterval(timer_boardTable);
+                $(".board")
+                    .html('<div class="board-default"><div class="board-icon"></div><div>보드</div></div>')
+                    .removeClass("board-active");
+            }, time);
+        }
     });
     $(".btn-signIn").click(function() {
         signIn();
     });
     $(".btn-explorer").click(function() {
+        clearInterval(timer_boardTable);
         clearInterval(timer_consoleTable);
+        explorer();
+        timer_explorer = setInterval(explorer, 1000);
         $(".field").slideUp();
         $(".explorer").fadeIn("slow");
         Cookies.set("dir", "./submit/" + Cookies.get("fbId") + "/", { expires: 1, secure: true });
         $(".explorer-title").text("S-Assistant");
+        $(".board-wrap").fadeOut();
+        $(".btn-board-close").css("display", "none");
+        $(".board")
+            .html('<div class="board-default"><div class="board-icon"></div><div>보드</div></div>')
+            .removeClass("board-active");
         $(".btn-root").css("display", "none");
         $(".explorer-btn-group").css("display", "none");
         $("html").addClass("html-infinite");
-        timer_explorer = setInterval(explorer, 1000);
     });
     $(".btn-console").click(function() {
+        clearInterval(timer_boardTable);
         clearInterval(timer_explorer);
+        consoleTable();
+        timer_consoleTable = setInterval(consoleTable, 1000);
         $(".field").slideDown();
         $(".explorer").fadeOut();
         $(".explorer-title").text("S-Assistant");
+        $(".board-wrap").fadeIn();
+        $(".btn-board-close").css("display", "none");
+        $(".board")
+            .html('<div class="board-default"><div class="board-icon"></div><div>보드</div></div>')
+            .removeClass("board-active");
         $(".btn-root").css("display", "none");
         $(".explorer-btn-group").css("display", "none");
         $("html").removeClass("html-infinite");
-        timer_consoleTable = setInterval(consoleTable, 1000);
     });
     $(".btn-root").click(function() {
         Cookies.set("dir", "./submit/" + Cookies.get("fbId") + "/", { expires: 1, secure: true });
@@ -111,6 +145,9 @@ $(function() {
             $(".modal-tab-create").addClass("modal-tab-active");
         }, 600);
         codeSet();
+        window.onbeforeunload = function() {
+            return true;
+        };
     });
     $(".btn-modal-copied-close").click(function() {
         $(".modal-copied").removeClass("active");
@@ -121,6 +158,7 @@ $(function() {
         $(".modal-create-content")
             .addClass("slideDown")
             .removeClass("slideUp");
+        window.onbeforeunload = true;
     });
     $(".btn-modal-modify-close").click(function() {
         $(".modal-tab-modify").removeClass("modal-tab-active");
@@ -128,6 +166,7 @@ $(function() {
         $(".modal-modify-content")
             .addClass("slideDown")
             .removeClass("slideUp");
+        window.onbeforeunload = true;
     });
     $("input:checkbox").click(function() {
         $("#create-checkbox-postNow").is(":checked")
@@ -215,7 +254,9 @@ $(function() {
                   {
                       do: "create",
                       label: $("#create-label").val(),
+                      description: $("#create-description").val(),
                       max: $("#create-max").val(),
+                      public: $("#create-checkbox-public").prop("checked") ? 1 : 0,
                       postNow: $("#create-checkbox-postNow").prop("checked") ? 1 : 0,
                       postDate: $("#create-post-date").val(),
                       postTime: $("#create-post-time").val(),
@@ -238,7 +279,8 @@ $(function() {
                             $(".modal-form-create input").prop("disabled", false),
                             $(".btn-create-save")
                                 .removeClass("btn-save-disabled")
-                                .prop("disabled", false))
+                                .prop("disabled", false),
+                            (window.onbeforeunload = true))
                           : ($(".btn-create-save")
                                 .removeClass("btn-save-disabled")
                                 .prop("disabled", false),
@@ -315,7 +357,9 @@ $(function() {
                   {
                       do: "modify",
                       label: $("#modify-label").val(),
+                      description: $("#modify-description").val(),
                       max: $("#modify-max").val(),
+                      public: $("#modify-checkbox-public").prop("checked") ? 1 : 0,
                       postNow: $("#modify-checkbox-postNow").prop("checked") ? 1 : 0,
                       postDate: $("#modify-post-date").val(),
                       postTime: $("#modify-post-time").val(),
@@ -337,7 +381,8 @@ $(function() {
                             $(".modal-form-modify input").prop("disabled", false),
                             $(".btn-modify-save")
                                 .removeClass("btn-save-disabled")
-                                .prop("disabled", false))
+                                .prop("disabled", false),
+                            (window.onbeforeunload = true))
                           : ($(".btn-modify-save")
                                 .removeClass("btn-save-disabled")
                                 .prop("disabled", false),
@@ -382,7 +427,8 @@ $(function() {
                               .removeClass("slideUp"),
                           $(".form-remove")
                               .removeClass("form-remove-disabled")
-                              .prop("disabled", false))
+                              .prop("disabled", false),
+                          (window.onbeforeunload = true))
                         : ($(".form-remove")
                               .removeClass("form-remove-disabled")
                               .prop("disabled", false),
@@ -461,10 +507,12 @@ function codeSet() {
     $(".create-preview-code").css("display", "block");
 }
 
-function modify(label, max, postNow, postDate, postTime, unlimited, deadlineDate, deadlineTime, afterDeadline, useFb, code) {
+function modify(label, description, max, public, postNow, postDate, postTime, unlimited, deadlineDate, deadlineTime, afterDeadline, useFb, code) {
     $(".modal-form-modify-title-label").text(label);
     $("#modify-label").val(label);
+    $("#modify-description").val(description);
     $("#modify-max").val(max);
+    $("#modify-checkbox-public").prop("checked", public);
     $("#modify-checkbox-postNow").prop("checked", postNow);
     postNow ? $(".form-row-modify-post").css("display", "none") : $(".form-row-modify-post").css("display", "flex");
     $("#modify-post-date").val(postDate);
@@ -484,6 +532,9 @@ function modify(label, max, postNow, postDate, postTime, unlimited, deadlineDate
     setTimeout(function() {
         $(".modal-tab-modify").addClass("modal-tab-active");
     }, 600);
+    window.onbeforeunload = function() {
+        return true;
+    };
 }
 
 function statusChangeCallback(response) {
@@ -508,6 +559,7 @@ function statusChangeCallback(response) {
         Cookies.remove("code_autoSet");
         clearInterval(timer_consoleTable);
         clearInterval(timer_explorer);
+        window.onbeforeunload = true;
         initialize();
     }
 }
@@ -553,6 +605,12 @@ function url(url) {
     document.getElementsByTagName("iframe")[0].src = url;
     document.body.removeChild(e);
     return false;
+}
+
+function boardTable() {
+    $.post("proxy.php", { do: "boardTable" }, function(response) {
+        response ? ($(".btn-board-close").css("display", "block"), $(".board").html("<h2>S-Board</h2><table><thead><tr><th>레이블</th><th>제출</th><th>마감</th><th>게시자</th></tr></thead><tbody>" + response + "</tbody></table>")) : ($(".btn-board-close").css("display", "block"), $(".board").html("<h3>현재 표시 가능한 폼 없음</h3>"));
+    });
 }
 
 function consoleTable() {
@@ -666,6 +724,7 @@ function initialize() {
                 $(".submit-subtitle").text(Cookies.get("name"));
             }
         }
+        submitValidate();
         timer_submitValidate = setInterval(submitValidate, 1000);
         window.onbeforeunload = function() {
             return true;
@@ -688,6 +747,7 @@ function initialize() {
         $(".btn-create").css("display", "none");
         if (!Cookies.get("fbValid") && Cookies.get("code") && Cookies.get("code_autoSet")) {
             Cookies.remove("code_autoSet");
+            $(".notice-main-nameRequired").slideDown();
             $("#input-code").val(Cookies.get("code"));
             $(".field").css("display", "block");
             $(".signIn-container").css("display", "block");
@@ -696,6 +756,9 @@ function initialize() {
         }
     } else {
         /* fbValid == true */
+        clearInterval(timer_explorer);
+        consoleTable();
+        timer_consoleTable = setInterval(consoleTable, 1000);
         $(".pf-container").addClass("pf-container-valid");
         $(".pf-icon")
             .css("background", "url(https://graph.facebook.com/" + Cookies.get("fbId") + "/picture) no-repeat center/contain")
@@ -703,13 +766,13 @@ function initialize() {
         $(".pf-name")
             .text(Cookies.get("fbName"))
             .css("display", "block");
+        $(".notice-main").css("display", "none");
         $(".field").css("overflow-y", "auto");
         $(".signIn-container").css("display", "none");
         $(".console-container").css("display", "block");
         $(".submit").css("display", "none");
         $(".explorer").css("display", "none");
         $(".btn-create").css("display", "block");
-        clearInterval(timer_explorer);
     }
     if (!Cookies.get("ownerFbId")) {
         $.post("proxy.php", { do: "ownerFbId", code: Cookies.get("code") }, function(response) {
