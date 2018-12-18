@@ -1,8 +1,8 @@
 <?
-if (!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
-    header('HTTP/1.0 403 Forbidden');
-    exit('<meta http-equiv="refresh" content="0;url=/">');
-}
+// if (!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+//     header('HTTP/1.0 403 Forbidden');
+//     exit('<meta http-equiv="refresh" content="0;url=/">');
+// }
 date_default_timezone_set('KST');
 $connect = mysqli_connect('localhost:3307', 'submit', 'AccountForSubmit', 'submit') or exit(false);
 $sever = 'https://submit.hyunwoo.org/';
@@ -15,6 +15,7 @@ if (!empty($_FILES)) {
     $deny = array('php', 'htaccess');
     $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
     if (in_array($ext, $deny)) {
+        mysqli_close($connect);
         exit(false);
     }
     $dir1 = "." . $ds . "submit" . $ds . $_COOKIE['ownerFbId'] . $ds;
@@ -48,7 +49,9 @@ switch ($_POST['do']) {
             }
         }
         $query = "INSERT INTO accounts VALUES (NULL, '" . date('Y-m-d H:i:s') . "', '" . $_POST['fbId'] . "', '" . $_POST['fbName'] . "')";
-        exit(!$overlap ? mysqli_query($connect, $query) : false);
+        !$overlap ? mysqli_query($connect, $query) : false;
+        mysqli_close($connect);
+        exit;
 
     case 'signIn':
         strChk($_POST['name'] . $_POST['code']);
@@ -56,9 +59,11 @@ switch ($_POST['do']) {
         $result = mysqli_query($connect, $query);
         while ($data = mysqli_fetch_array($result)) {
             if ($_POST['code'] == $data['code']) {
+                mysqli_close($connect);
                 exit(true);
             }
         }
+        mysqli_close($connect);
         exit(false);
 
     case 'submitValidate':
@@ -67,18 +72,24 @@ switch ($_POST['do']) {
         while ($data = mysqli_fetch_array($result)) {
             if ($_POST['code'] == $data['code']) {
                 if ($data['useFb'] && !$_COOKIE['fbValid']) {
+                    mysqli_close($connect);
                     exit('validationError_fbRequired');
                 } elseif ($data['submits'] >= $data['max']) {
+                    mysqli_close($connect);
                     exit('validationError_maxLimit');
                 } elseif (!$data['postNow'] && strtotime($data['postTsp']) > time()) {
+                    mysqli_close($connect);
                     exit('validationError_beforePost');
                 } elseif (!$data['unlimited'] && strtotime($data['deadlineTsp']) < time() && !$data['afterDeadline']) {
+                    mysqli_close($connect);
                     exit('validationError_expired');
                 } else {
+                    mysqli_close($connect);
                     exit($data['label']);
                 }
             }
         }
+        mysqli_close($connect);
         exit(false);
 
     case 'codeSet':
@@ -86,10 +97,47 @@ switch ($_POST['do']) {
         $result = mysqli_query($connect, $query);
         while ($data = mysqli_fetch_array($result)) {
             if ($_POST['code'] == $data['code']) {
+                mysqli_close($connect);
                 exit(true);
             }
         }
+        mysqli_close($connect);
         exit(false);
+
+    case 'boardTable':
+        $query = "SELECT * FROM forms";
+        $result = mysqli_query($connect, $query);
+        while ($data = mysqli_fetch_array($result)) {
+            if ($data['public']) {
+                $diff = strtotime($data['deadlineTsp']) - time();
+                if ($diff < 0) {
+                    $data['unlimited'] ? $expire = '무기한' : $expire = '마감됨';
+                } else if ($diff < $s) {
+                    $expire = $diff . '초 후';
+                } elseif ($h > $diff && $diff >= $s) {
+                    $expire = round($diff / $s) . '분 후';
+                } elseif ($d > $diff && $diff >= $h) {
+                    $expire = round($diff / $h) . '시간 후';
+                } elseif ($y > $diff && $diff >= $d) {
+                    $expire = round($diff / $d) . '일 후';
+                } elseif ($y > $diff && $diff >= $d) {
+                    $expire = round($diff / $d) . '개월 후';
+                } else {
+                    $expire = date('Y. m. d', $diff);
+                }
+                $query = "SELECT fbId, fbName FROM accounts";
+                $result = mysqli_query($connect, $query);
+                while ($data2 = mysqli_fetch_array($result)) {
+                    if ($data2['fbId'] == $data['owner']) {
+                        $owner = $data2['fbName'];
+                        break;
+                    }
+                }
+                echo '<tr><th><a href="' . $server . $data['code'] . '" target="_self">' . $data['label'] . '</a></th><td>' . $data['submits'] . '/' . $data['max'] . '</td><td>' . $expire . '</td><td>' . $owner . '</td></tr>';
+            }
+        }
+        mysqli_close($connect);
+        exit;
 
     case 'consoleTable':
         $query = "SELECT * FROM forms ORDER BY forms.Id DESC";
@@ -158,10 +206,11 @@ switch ($_POST['do']) {
                 if ($data['owner'] == $_COOKIE["fbId"]) {
                     $owner = '소유자';
                 }
-                $modify = "'" . $data['label'] . "'," . $data['max'] . "," . $data['postNow'] . "," . "'" . $postTsp[0] . "'," . "'" . $postTsp[1] . "'," . $data['unlimited'] . "," . "'" . $deadlineTsp[0] . "'," . "'" . $deadlineTsp[1] . "'," . $data['afterDeadline'] . "," . $data['useFb'] . ",'" . $data['code'] . "'";
+                $modify = "'" . $data['label'] . "','" . $data['description'] . "'," . $data['max'] . "," . $data['public'] . "," . $data['postNow'] . "," . "'" . $postTsp[0] . "'," . "'" . $postTsp[1] . "'," . $data['unlimited'] . "," . "'" . $deadlineTsp[0] . "'," . "'" . $deadlineTsp[1] . "'," . $data['afterDeadline'] . "," . $data['useFb'] . ",'" . $data['code'] . "'";
                 echo '<tr id="row_' . $data['code'] . '"><th>' . $data['label'] . '<br><button class="btn-modify" onclick="modify(' . $modify . ')" type="button">관리</button></th><td><button class="btn-code" onclick=copy("https://submit.hyunwoo.org/' . $data['code'] . '") type="button">' . $data['code'] . '</button></td><td>' . $data['submits'] . '/' . $data['max'] . '</td><td class="td-auto">' . $create . '</td><td class="td-auto">' . $post . '</td><td class="td-auto">' . $expire . '</td><td class="td-auto">' . $afterDeadline . '</td><td class="td-auto">' . $usefb . '</td><td class="td-auto">' . $owner . '</td></tr>';
             }
         }
+        mysqli_close($connect);
         exit;
 
     case 'create':
@@ -169,27 +218,40 @@ switch ($_POST['do']) {
         $tableName = $_POST['code'];
         $postTsp = $_POST['postDate'] . ' ' . $_POST['postTime'];
         $deadlineTsp = $_POST['deadlineDate'] . ' ' . $_POST['deadlineTime'];
-        $query = "INSERT INTO forms VALUES (NULL, '" . date('Y-m-d H:i:s') . "', '" . $_POST['label'] . "', '" . $_POST['max'] . "', '" . $_POST['postNow'] . "', '" . $postTsp . "', '" . $_POST['unlimited'] . "', '" . $deadlineTsp . "', '" . $_POST['afterDeadline'] . "', '" . $_POST['useFb'] . "', '" . $_POST['code'] . "', '0', '" . $_POST['fbId'] . "', '', '')";
+        $query = "INSERT INTO forms VALUES (NULL, '" . date('Y-m-d H:i:s') . "', '" . $_POST['label'] . "', '" . $_POST['description'] . "', '" . $_POST['max'] . "', '" . $_POST['public'] . "', '" . $_POST['postNow'] . "', '" . $postTsp . "', '" . $_POST['unlimited'] . "', '" . $deadlineTsp . "', '" . $_POST['afterDeadline'] . "', '" . $_POST['useFb'] . "', '" . $_POST['code'] . "', '0', '" . $_POST['fbId'] . "', '', '')";
         $result = mysqli_query($connect, $query);
         $dir1 = "." . $ds . "submit" . $ds . $_POST['fbId'] . $ds;
         $dir2 = $dir1 . $_POST['code'] . $ds;
         mkdir($dir1, 0700);
         mkdir($dir2, 0700);
+        mysqli_close($connect);
         exit($result ? true : false);
 
     case 'modify':
         strChk($_POST['label']);
         $postTsp = $_POST['postDate'] . ' ' . $_POST['postTime'];
         $deadlineTsp = $_POST['deadlineDate'] . ' ' . $_POST['deadlineTime'];
-        $query = "UPDATE forms SET label='" . $_POST['label'] . "', max='" . $_POST['max'] . "', postNow='" . $_POST['postNow'] . "', postTsp='" . $postTsp . "', unlimited='" . $_POST['unlimited'] . "', deadlineTsp='" . $deadlineTsp . "', afterDeadline='" . $_POST['afterDeadline'] . "', useFb='" . $_POST['useFb'] . "' WHERE code='" . $_POST['code'] . "'";
+        $query = "UPDATE forms SET
+            label = '" . $_POST['label'] . "',
+            description = '" . $_POST['description'] . "',
+            max = '" . $_POST['max'] . "',
+            public = '" . $_POST['public'] . "',
+            postNow = '" . $_POST['postNow'] . "',
+            postTsp = '" . $postTsp . "',
+            unlimited = '" . $_POST['unlimited'] . "',
+            deadlineTsp = '" . $deadlineTsp . "',
+            afterDeadline = '" . $_POST['afterDeadline'] . "',
+            useFb = '" . $_POST['useFb'] . "'
+            WHERE code = '" . $_POST['code'] . "'";
         $result = mysqli_query($connect, $query);
+        mysqli_close($connect);
         exit($result ? true : false);
 
     case 'remove':
-        $code = $_POST['code'];
-        $query = "DELETE FROM forms WHERE code='$code'";
+        $query = "DELETE FROM forms WHERE code='" . $_POST['code'] . "'";
         $result = mysqli_query($connect, $query);
-        rmdirAll("." . $ds . "submit" . $ds . $_COOKIE['fbId'] . $ds . $_POST['code'] . $ds);
+        $result ? rmdirAll("." . $ds . "submit" . $ds . $_COOKIE['fbId'] . $ds . $_POST['code'] . $ds) : false;
+        mysqli_close($connect);
         exit($result ? true : false);
 
     case 'ownerFbId':
@@ -197,9 +259,11 @@ switch ($_POST['do']) {
         $result = mysqli_query($connect, $query);
         while ($data = mysqli_fetch_array($result)) {
             if ($data['code'] == $_POST["code"]) {
+                mysqli_close($connect);
                 exit($data['owner']);
             }
         }
+        mysqli_close($connect);
         exit(false);
 
     case 'fetchLabel':
@@ -207,9 +271,11 @@ switch ($_POST['do']) {
         $result = mysqli_query($connect, $query);
         while ($data = mysqli_fetch_array($result)) {
             if ($_POST['code'] == $data['code']) {
+                mysqli_close($connect);
                 exit($data['label']);
             }
         }
+        mysqli_close($connect);
         exit(false);
 
     case 'explorer':
@@ -232,10 +298,12 @@ switch ($_POST['do']) {
             strlen($fileName) <= 30 ? $fileName = '[' . strtoupper(substr($fileName, strrpos($files[$i], ".") + 1)) . ']<br>' . $fileName : $fileName = '[' . strtoupper(substr($fileName, strrpos($files[$i], ".") + 1)) . ']<br>' . iconv_substr($fileName, 0, 30, 'utf-8') . '&ctdot;';
             echo $exist ? '<div class="folder-group" onclick=openDir("' . $files[$i] . '")><div class="folder"></div><div class="folder-name">' . $label . '</div></div>' : '<div class="file-group" id="fileGroupIndex_' . $i . '"><div class="file-remove" onclick="remove(' . $i . ',' . $target . ')"></div><div class="file file-' . pathinfo($files[$i], PATHINFO_EXTENSION) . '" onclick="download(' . $target . ')"></div><div class="file-name" id="fileNameIndex_' . $i . '" onclick="download(' . $target . ')" onmouseover="fileNameView(' . $i . ',' . $target . ')">' . $fileName . '</div></div>';
         }
+        mysqli_close($connect);
         exit;
 
     case 'unlink':
         rename($_POST['dir'] . $_POST['target'], "." . $ds . "trashes" . $ds . $_POST['target']);
+        mysqli_close($connect);
         exit;
 
     case 'zip':
@@ -250,6 +318,7 @@ switch ($_POST['do']) {
             $zip->close();
             echo $zip_name;
         }
+        mysqli_close($connect);
         exit;
 }
 
