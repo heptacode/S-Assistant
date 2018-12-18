@@ -48,60 +48,54 @@ switch ($_POST['do']) {
             }
         }
         $query = "INSERT INTO accounts VALUES (NULL, '" . date('Y-m-d H:i:s') . "', '" . $_POST['fbId'] . "', '" . $_POST['fbName'] . "')";
-        !$overlap ? mysqli_query($connect, $query) : null;
-        exit;
+        exit(!$overlap ? mysqli_query($connect, $query) : false);
 
     case 'signIn':
         strChk($_POST['name'] . $_POST['code']);
         $query = "SELECT code FROM forms";
         $result = mysqli_query($connect, $query);
-        $exist = false;
         while ($data = mysqli_fetch_array($result)) {
             if ($_POST['code'] == $data['code']) {
-                $exist = true;
+                exit(true);
             }
         }
-        exit($exist ? true : false);
+        exit(false);
 
     case 'submitValidate':
-        $returnValue = null;
         $query = "SELECT * FROM forms";
         $result = mysqli_query($connect, $query);
         while ($data = mysqli_fetch_array($result)) {
             if ($_POST['code'] == $data['code']) {
                 if ($data['useFb'] && !$_COOKIE['fbValid']) {
-                    $returnValue = 'validationError_fbRequired';
+                    exit('validationError_fbRequired');
                 } elseif ($data['submits'] >= $data['max']) {
-                    $returnValue = 'validationError_maxLimit';
+                    exit('validationError_maxLimit');
                 } elseif (!$data['postNow'] && strtotime($data['postTsp']) > time()) {
-                    $returnValue = 'validationError_beforePost';
+                    exit('validationError_beforePost');
                 } elseif (!$data['unlimited'] && strtotime($data['deadlineTsp']) < time() && !$data['afterDeadline']) {
-                    $returnValue = 'validationError_expired';
+                    exit('validationError_expired');
                 } else {
-                    $returnValue = $data['label'];
+                    exit($data['label']);
                 }
             }
         }
-        exit($returnValue);
+        exit(false);
 
     case 'codeSet':
         $query = "SELECT code FROM forms";
         $result = mysqli_query($connect, $query);
-        $overlap = false;
         while ($data = mysqli_fetch_array($result)) {
             if ($_POST['code'] == $data['code']) {
-                $overlap = true;
+                exit(true);
             }
         }
-        exit($overlap ? true : false);
+        exit(false);
 
     case 'consoleTable':
         $query = "SELECT * FROM forms ORDER BY forms.Id DESC";
         $result = mysqli_query($connect, $query);
-        $nodata = true;
         while ($data = mysqli_fetch_array($result)) {
             if ($data['owner'] == $_COOKIE["fbId"]) {
-                $nodata = false;
                 $diff = time() - strtotime($data['createTsp']);
                 $s = 60;
                 $h = $s * 60;
@@ -168,9 +162,6 @@ switch ($_POST['do']) {
                 echo '<tr id="row_' . $data['code'] . '"><th>' . $data['label'] . '<br><button class="btn-modify" onclick="modify(' . $modify . ')" type="button">관리</button></th><td><button class="btn-code" onclick=copy("https://submit.hyunwoo.org/' . $data['code'] . '") type="button">' . $data['code'] . '</button></td><td>' . $data['submits'] . '/' . $data['max'] . '</td><td class="td-auto">' . $create . '</td><td class="td-auto">' . $post . '</td><td class="td-auto">' . $expire . '</td><td class="td-auto">' . $afterDeadline . '</td><td class="td-auto">' . $usefb . '</td><td class="td-auto">' . $owner . '</td></tr>';
             }
         }
-        if ($nodata) {
-            exit(false);
-        }
         exit;
 
     case 'create':
@@ -209,18 +200,17 @@ switch ($_POST['do']) {
                 exit($data['owner']);
             }
         }
-        exit;
+        exit(false);
 
     case 'fetchLabel':
-        $returnValue = null;
         $query = "SELECT * FROM forms";
         $result = mysqli_query($connect, $query);
         while ($data = mysqli_fetch_array($result)) {
             if ($_POST['code'] == $data['code']) {
-                $returnValue = $data['label'];
+                exit($data['label']);
             }
         }
-        exit($returnValue);
+        exit(false);
 
     case 'explorer':
         $files = scandir($_POST['dir']);
