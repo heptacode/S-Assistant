@@ -75,14 +75,19 @@ button {
     -webkit-tap-highlight-color: transparent;
 }
 input {
-    outline: none;
-    border: 0;
+    all: unset;
     border-bottom: 1px solid gray;
-    border-radius: 0;
     color: #72767b;
     font-size: 1.1rem;
     text-align: center;
-    background: transparent;
+    -webkit-tap-highlight-color: transparent;
+}
+textarea {
+    all: unset;
+    border-bottom: 1px solid gray;
+    color: #72767b;
+    font-size: 1.1rem;
+    text-align: center;
     -webkit-tap-highlight-color: transparent;
 }
 label {
@@ -277,6 +282,79 @@ main {
     position: absolute;
     width: 100%;
     height: 100%;
+}
+.board-wrap {
+    display: block;
+    position: absolute;
+    top: 4.6rem;
+    left: 1rem;
+    min-width: 25%;
+    max-width: 70%;
+    height: 83%;
+    z-index: 4;
+}
+.btn-board-close {
+    all: unset;
+    display: none;
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    font-size: 18px;
+    color: #007bff;
+    cursor: pointer;
+    -webkit-transition: 0.15s;
+    -moz-transition: 0.15s;
+    -o-transition: 0.15s;
+    transition: 0.15s;
+    z-index: 5;
+}
+.btn-board-close:hover {
+    color: #0056b3;
+}
+.board {
+    display: flex;
+    justify-content: center;
+    border-radius: 2rem;
+    background: rgb(238, 238, 238);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    color: black;
+    width: 85px;
+    height: 35px;
+    padding: 5px;
+    cursor: pointer;
+    overflow: hidden;
+    -webkit-transition: .5s;
+    -moz-transition: .5s;
+    -o-transition: .5s;
+    transition: .5s;
+}
+.board-active {
+    display: block;
+    text-align: center;
+    border-radius: 20px;
+    width: 100%;
+    height: 100%;
+    padding: 2rem;
+    overflow-y: scroll;
+    pointer-events: none;
+    cursor: default;
+}
+.board-active a {
+    pointer-events: auto;
+    cursor: pointer;
+}
+.board-default {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.board-default .board-icon {
+    display: block;
+    background: url("list.svg") no-repeat center;
+    background-size: cover;
+    width: 30px;
+    height: 30px;
+    margin-right: 5px;
 }
 .notice-main {
     display: none;
@@ -542,12 +620,12 @@ table td {
     word-break: break-all;
 }
 .trModify {
-    background: #E8EFFE;
+    background: #e8effe;
     pointer-events: none;
     cursor: default;
 }
 .trRemove {
-    background: #e05559;    
+    background: #e05559;
     pointer-events: none;
     cursor: not-allowed;
 }
@@ -705,11 +783,12 @@ table td {
     position: absolute;
     top: 3rem;
     left: 1rem;
-    border: .5px solid white;
+    border: 0.5px solid white;
     border-radius: 5px;
 }
-.btn-add, .btn-zip {
-    border: .5px solid white;
+.btn-add,
+.btn-zip {
+    border: 0.5px solid white;
     padding: 7px 18px;
     font-size: 16px;
     color: white;
@@ -725,7 +804,8 @@ table td {
 .btn-zip {
     border-radius: 0 5px 5px 0;
 }
-.btn-add:hover, .btn-zip:hover {
+.btn-add:hover,
+.btn-zip:hover {
     color: rgba(255, 255, 255, 0.5);
 }
 .explorer-container {
@@ -813,16 +893,28 @@ table td {
 .file-ai {
     background: url("icons/ai.svg") no-repeat center;
 }
-.file-aac, .file-aiff, .file-flac, .file-mp3, .file-m4a, .file-m4r, .file-m4p, .file-ogg, .file-wav, .file-wma, .file-webm {
+.file-aac,
+.file-aiff,
+.file-flac,
+.file-mp3,
+.file-m4a,
+.file-m4r,
+.file-m4p,
+.file-ogg,
+.file-wav,
+.file-wma,
+.file-webm {
     background: url("icons/audio.png") no-repeat center;
 }
-.file-doc, .file-docx {
+.file-doc,
+.file-docx {
     background: url("icons/docx.svg") no-repeat center;
 }
 .file-hwp {
     background: url("icons/hwp.png") no-repeat center;
 }
-.file-txt, .file-rtf {
+.file-txt,
+.file-rtf {
     background: url("icons/txt.png") no-repeat center;
 }
 .file-pdf {
@@ -831,10 +923,13 @@ table td {
 .file-psd {
     background: url("icons/psd.svg") no-repeat center;
 }
-.file-ppt, .file-ppsx, .file-pptx {
+.file-ppt,
+.file-ppsx,
+.file-pptx {
     background: url("icons/pptx.svg") no-repeat center;
 }
-.file-xls, .file-xlsx {
+.file-xls,
+.file-xlsx {
     background: url("icons/xlsx.svg") no-repeat center;
 }
 .file-zip {
@@ -1242,12 +1337,15 @@ table td {
         transform: translate3d(5px, 0, 0);
     }
 }
-.form-row > input {
+.form-row > input, .form-row > textarea {
     display: block;
     border: 0;
     color: rgb(41, 40, 43);
     text-align: left;
     width: 65%;
+}
+.form-row > textarea {
+    resize: vertical;
 }
 .form-row-reserve {
     display: none;
