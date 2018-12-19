@@ -105,13 +105,23 @@ switch ($_POST['do']) {
         exit(false);
 
     case 'boardTable':
-        $query = "SELECT * FROM forms";
+        $query = "SELECT * FROM forms ORDER BY forms.Id DESC";
         $result = mysqli_query($connect, $query);
         while ($data = mysqli_fetch_array($result)) {
             if ($data['public']) {
+                $data['submits'] >= $data['max'] ? $rowClass = ' class="trDisabled"' : $rowClass = '';
+                $s = 60;
+                $h = $s * 60;
+                $d = $h * 24;
+                $y = $d * 10;
                 $diff = strtotime($data['deadlineTsp']) - time();
                 if ($diff < 0) {
-                    $data['unlimited'] ? $expire = '무기한' : $expire = '마감됨';
+                    if ($data['unlimited']) {
+                        $expire = '무기한';
+                    } else {
+                        $expire = '마감됨';
+                        $rowClass = ' class="trDisabled"';
+                    }
                 } else if ($diff < $s) {
                     $expire = $diff . '초 후';
                 } elseif ($h > $diff && $diff >= $s) {
@@ -125,15 +135,15 @@ switch ($_POST['do']) {
                 } else {
                     $expire = date('Y. m. d', $diff);
                 }
-                $query = "SELECT fbId, fbName FROM accounts";
-                $result = mysqli_query($connect, $query);
-                while ($data2 = mysqli_fetch_array($result)) {
+                $query2 = "SELECT fbId, fbName FROM accounts";
+                $result2 = mysqli_query($connect, $query2);
+                while ($data2 = mysqli_fetch_array($result2)) {
                     if ($data2['fbId'] == $data['owner']) {
                         $owner = $data2['fbName'];
-                        break;
+                        break 1;
                     }
                 }
-                echo '<tr><th><a href="' . $server . $data['code'] . '" target="_self">' . $data['label'] . '</a></th><td>' . $data['submits'] . '/' . $data['max'] . '</td><td>' . $expire . '</td><td>' . $owner . '</td></tr>';
+                echo '<tr' . $rowClass . '><th><a href="' . $server . $data['code'] . '" target="_self">' . $data['label'] . '</a></th><td>' . $data['submits'] . '/' . $data['max'] . '</td><td>' . $expire . '</td><td>' . $owner . '</td></tr>';
             }
         }
         mysqli_close($connect);
@@ -207,7 +217,7 @@ switch ($_POST['do']) {
                     $owner = '소유자';
                 }
                 $modify = "'" . $data['label'] . "','" . $data['description'] . "'," . $data['max'] . "," . $data['public'] . "," . $data['postNow'] . "," . "'" . $postTsp[0] . "'," . "'" . $postTsp[1] . "'," . $data['unlimited'] . "," . "'" . $deadlineTsp[0] . "'," . "'" . $deadlineTsp[1] . "'," . $data['afterDeadline'] . "," . $data['useFb'] . ",'" . $data['code'] . "'";
-                echo '<tr id="row_' . $data['code'] . '"><th>' . $data['label'] . '<br><button class="btn-modify" onclick="modify(' . $modify . ')" type="button">관리</button></th><td><button class="btn-code" onclick=copy("https://submit.hyunwoo.org/' . $data['code'] . '") type="button">' . $data['code'] . '</button></td><td>' . $data['submits'] . '/' . $data['max'] . '</td><td class="td-auto">' . $create . '</td><td class="td-auto">' . $post . '</td><td class="td-auto">' . $expire . '</td><td class="td-auto">' . $afterDeadline . '</td><td class="td-auto">' . $usefb . '</td><td class="td-auto">' . $owner . '</td></tr>';
+                echo '<tr id="row_' . $data['code'] . '"><th>' . $data['label'] . '<br><button class="btn-modify" onclick="modify(' . $modify . ')" type="button">관리</button></th><td><button class="btn-code" onclick=copy("' . $data['code'] . '") type="button">' . $data['code'] . '</button></td><td>' . $data['submits'] . '/' . $data['max'] . '</td><td class="td-auto">' . $create . '</td><td class="td-auto">' . $post . '</td><td class="td-auto">' . $expire . '</td><td class="td-auto">' . $afterDeadline . '</td><td class="td-auto">' . $usefb . '</td><td class="td-auto">' . $owner . '</td></tr>';
             }
         }
         mysqli_close($connect);
@@ -317,6 +327,23 @@ switch ($_POST['do']) {
             }
             $zip->close();
             echo $zip_name;
+        }
+        mysqli_close($connect);
+        exit;
+
+    case 'copy':
+        $query = "SELECT * FROM forms";
+        $result = mysqli_query($connect, $query);
+        while ($data = mysqli_fetch_array($result)) {
+            if ($_POST['code'] == $data['code']) {
+                $dataArray = array(
+                    'label' => $data['label'],
+                    'description' => $data['description'] ? $data['description'] : 'S-Assistant 링크 공유',
+                    'submits' => intval($data['submits']),
+                );
+                mysqli_close($connect);
+                exit(json_encode($dataArray));
+            }
         }
         mysqli_close($connect);
         exit;
