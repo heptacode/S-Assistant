@@ -51,7 +51,8 @@ html {
     }
 }
 body {
-    all: unset;
+    margin: 0;
+    padding: 0;
 }
 a {
     color: #007bff;
@@ -75,19 +76,25 @@ button {
     -webkit-tap-highlight-color: transparent;
 }
 input {
-    all: unset;
+    outline: none;
+    border: 0;
     border-bottom: 1px solid gray;
+    border-radius: 0;
     color: #72767b;
     font-size: 1.1rem;
     text-align: center;
+    background: transparent;
     -webkit-tap-highlight-color: transparent;
 }
 textarea {
-    all: unset;
+    outline: none;
+    border: 0;
     border-bottom: 1px solid gray;
+    border-radius: 0;
     color: #72767b;
     font-size: 1.1rem;
     text-align: center;
+    background: transparent;
     -webkit-tap-highlight-color: transparent;
 }
 label {
@@ -294,11 +301,12 @@ main {
     z-index: 4;
 }
 .btn-board-close {
-    all: unset;
     display: none;
     position: absolute;
-    top: 14px;
-    left: 14px;
+    top: 12px;
+    left: 12px;
+    border: 0;
+    outline: none;
     font-size: 18px;
     color: #007bff;
     cursor: pointer;
@@ -315,7 +323,7 @@ main {
     display: flex;
     justify-content: center;
     border-radius: 2rem;
-    background: rgb(238, 238, 238);
+    background: rgb(255, 255, 255);
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
     color: black;
     width: 85px;
@@ -323,10 +331,10 @@ main {
     padding: 5px;
     cursor: pointer;
     overflow: hidden;
-    -webkit-transition: .5s;
-    -moz-transition: .5s;
-    -o-transition: .5s;
-    transition: .5s;
+    -webkit-transition: 0.5s;
+    -moz-transition: 0.5s;
+    -o-transition: 0.5s;
+    transition: 0.5s;
 }
 .board-active {
     display: block;
@@ -618,6 +626,16 @@ table td {
 }
 table td {
     word-break: break-all;
+}
+.trDisabled {
+    opacity: 0.4;
+    pointer-events: none;
+    cursor: default;
+}
+.trDisabled a {
+    color: black;
+    pointer-events: none;
+    cursor: default;
 }
 .trModify {
     background: #e8effe;
@@ -965,44 +983,6 @@ table td {
     opacity: 1;
     pointer-events: auto;
 }
-.modal-copied {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background: rgba(0, 0, 0, 0.5);
-    font-size: 1.2rem;
-    opacity: 0;
-    font-weight: bold;
-    pointer-events: none;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    -webkit-transition: opacity 0.2s ease-in;
-    -moz-transition: opacity 0.2s ease-in;
-    -o-transition: opacity 0.2s ease-in;
-    transition: opacity 0.2s ease-in;
-    z-index: 4;
-}
-.btn-modal-copied-close {
-    padding: 0 0 0 1rem;
-    font-size: 1.2rem;
-    color: #007bff;
-    border: 0;
-    text-decoration: none;
-    background: transparent;
-    text-decoration-skip: objects;
-    -webkit-transition: 0.2s;
-    -moz-transition: 0.2s;
-    -o-transition: 0.2s;
-    transition: 0.2s;
-}
-.btn-modal-copied-close:hover {
-    color: #0056b3;
-    text-decoration: underline;
-}
 .modal-create,
 .modal-modify {
     display: flex;
@@ -1164,15 +1144,14 @@ table td {
 }
 .btn-save {
     position: absolute;
-    top: 0.2rem;
-    right: 0.4rem;
+    top: 2px;
+    right: 5px;
     border: 0;
     padding: 10px;
     font-size: 20px;
     font-weight: bold;
     color: rgb(85, 151, 255);
     cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
 }
 .btn-save:hover {
     color: rgb(41, 104, 206);
@@ -1247,7 +1226,6 @@ table td {
     background: rgb(254, 254, 255);
     cursor: pointer;
     color: red;
-    -webkit-tap-highlight-color: transparent;
     -webkit-transition: 0.3s;
     -moz-transition: 0.3s;
     -o-transition: 0.3s;
@@ -1337,7 +1315,8 @@ table td {
         transform: translate3d(5px, 0, 0);
     }
 }
-.form-row > input, .form-row > textarea {
+.form-row > input,
+.form-row > textarea {
     display: block;
     border: 0;
     color: rgb(41, 40, 43);
@@ -1464,4 +1443,68 @@ table td {
 }
 .switch-container input:checked + .switch::after {
     transform: translate3d(22px, 2px, 0);
+}
+.modal-copied {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.5);
+    font-size: 1.2rem;
+    opacity: 0;
+    font-weight: bold;
+    pointer-events: none;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-transition: 0.2s;
+    -moz-transition: 0.2s;
+    -o-transition: 0.2s;
+    transition: 0.2s;
+    z-index: 4;
+}
+.btn-modal-copied-close {
+    padding: 0 0 0 1rem;
+    font-size: 1.2rem;
+    color: #007bff;
+    border: 0;
+    text-decoration: none;
+    background: transparent;
+    text-decoration-skip: objects;
+    -webkit-transition: 0.2s;
+    -moz-transition: 0.2s;
+    -o-transition: 0.2s;
+    transition: 0.2s;
+}
+.btn-modal-copied-close:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+.btn-kakao-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fdeb00;
+    border: 0;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    margin-top: 20px;
+    padding: 5px 40px;
+    font-size: 17px;
+    color: #3b1e1c;
+    cursor: pointer;
+    transition: 0.1s;
+}
+.btn-kakao-link:hover {
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+    opacity: 0.7;
+}
+.btn-kakao-link span {
+    background: url("https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png") no-repeat center;
+    background-size: cover;
+    width: 30px;
+    height: 30px;
+    margin-right: 5px;
 }
