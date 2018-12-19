@@ -1,6 +1,7 @@
 /*
     INITIALIZE
 */
+Kakao.init("ec48fd8de0b2f961132ac08adae7f18c");
 $.ajaxSetup({ cache: false });
 $.datepicker.setDefaults({
     dateFormat: "yy-mm-dd",
@@ -35,7 +36,8 @@ var server = "https://submit.hyunwoo.org/",
     timer_boardTable,
     timer_consoleTable,
     timer_submitValidate,
-    timer_explorer;
+    timer_explorer,
+    kakaoShare;
 
 /*
     jQuery Functions
@@ -50,7 +52,7 @@ $(function() {
     });
     $(".board").click(function() {
         boardTable();
-        timer_boardTable = setInterval(boardTable, 2000);
+        timer_boardTable = setInterval(boardTable, 1000);
         $(".board")
             .html("읽어들이는 중")
             .addClass("board-active");
@@ -61,7 +63,7 @@ $(function() {
         $(".board")
             .html('<div class="board-default"><div class="board-icon"></div><div>보드</div></div>')
             .removeClass("board-active");
-        for(var time = 0; time <= 500; time += 100){
+        for (var time = 0; time <= 500; time += 100) {
             setTimeout(function() {
                 $(".btn-board-close").fadeOut();
                 clearInterval(timer_boardTable);
@@ -206,7 +208,7 @@ $(function() {
             : $(".create-label-label")
                   .css("color", "black")
                   .removeClass("shake");
-        !$("#create-max").val() || $("#create-max").val() == " " || $("#create-max").val() <= 0 || $("#create-max").val() > 1000
+        isNaN(parseInt($("#create-max").val())) || parseInt($("#create-max").val()) <= 0 || parseInt($("#create-max").val()) > 1000
             ? ((valid = false),
               $(".create-label-max")
                   .css("color", "red")
@@ -255,7 +257,7 @@ $(function() {
                       do: "create",
                       label: $("#create-label").val(),
                       description: $("#create-description").val(),
-                      max: $("#create-max").val(),
+                      max: parseInt($("#create-max").val()),
                       public: $("#create-checkbox-public").prop("checked") ? 1 : 0,
                       postNow: $("#create-checkbox-postNow").prop("checked") ? 1 : 0,
                       postDate: $("#create-post-date").val(),
@@ -309,7 +311,7 @@ $(function() {
             : $(".modify-label-label")
                   .css("color", "black")
                   .removeClass("shake");
-        !$("#modify-max").val() || $("#modify-max").val() == " " || $("#modify-max").val() <= 0 || $("#modify-max").val() > 1000
+        isNaN(parseInt($("#modify-max").val())) || parseInt($("#create-max").val()) <= 0 || parseInt($("#modify-max").val()) > 1000
             ? ((valid = false),
               $(".modify-label-max")
                   .css("color", "red")
@@ -358,7 +360,7 @@ $(function() {
                       do: "modify",
                       label: $("#modify-label").val(),
                       description: $("#modify-description").val(),
-                      max: $("#modify-max").val(),
+                      max: parseInt($("#modify-max").val()),
                       public: $("#modify-checkbox-public").prop("checked") ? 1 : 0,
                       postNow: $("#modify-checkbox-postNow").prop("checked") ? 1 : 0,
                       postDate: $("#modify-post-date").val(),
@@ -450,8 +452,8 @@ $(function() {
                 .prop("disabled", false);
         }, 1000);
     });
-    new Dropzone(".dropzone");
 });
+
 $(document).keyup(function(e) {
     if (e.keyCode == 13 || e.which == 13) signIn();
     else if (e.keyCode == 27 || e.which == 27) {
@@ -468,6 +470,7 @@ $(document).keyup(function(e) {
             .removeClass("slideUp");
     }
 });
+
 function signIn() {
     var valid = true;
     if (!$("#input-name").val() || $("#input-name") == " ") {
@@ -494,6 +497,7 @@ function signIn() {
         );
     }
 }
+
 var randomString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 function codeSet() {
     $(".load-code").fadeIn();
@@ -537,66 +541,45 @@ function modify(label, description, max, public, postNow, postDate, postTime, un
     };
 }
 
-function statusChangeCallback(response) {
-    $(".pf-icon").css("visible", "hidden");
-    $(".pf-name").text("로드 중");
-    if (response.status === "connected") {
-        FB.api("/me", function(fb) {
-            Cookies.set("fbValid", true, { expires: 1, secure: true });
-            Cookies.set("fbId", fb.id, { expires: 1, secure: true });
-            Cookies.set("fbName", fb.name, { expires: 1, secure: true });
-            $.post("proxy.php", { do: "fbLogin", fbId: fb.id, fbName: fb.name });
-            initialize();
-        });
-    } else {
-        Cookies.remove("fbValid");
-        Cookies.remove("fbId");
-        Cookies.remove("fbName");
-        Cookies.remove("name");
-        Cookies.remove("ownerFbId");
-        Cookies.remove("dir");
-        Cookies.remove("code");
-        Cookies.remove("code_autoSet");
-        clearInterval(timer_consoleTable);
-        clearInterval(timer_explorer);
-        window.onbeforeunload = true;
-        initialize();
-    }
-}
-
-function checkLoginState() {
-    FB.getLoginStatus(function(response) {
-        statusChangeCallback(response);
-    });
-}
-
-window.fbAsyncInit = function() {
-    FB.init({
-        appId: "2157685250910459",
-        cookie: true,
-        xfbml: true,
-        version: "v3.2"
-    });
-    FB.AppEvents.logPageView();
-};
-(function(d, s, id) {
-    var js,
-        fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s);
-    js.id = id;
-    js.src = "https://connect.facebook.net/ko_KR/sdk.js#xfbml=1&version=v3.2&appId=2157685250910459&autoLogAppEvents=1";
-    fjs.parentNode.insertBefore(js, fjs);
-})(document, "script", "facebook-jssdk");
-
-function copy(val) {
+function copy(code) {
     var t = document.createElement("textarea");
     document.body.appendChild(t);
-    t.value = val;
+    t.value = server + code;
     t.select();
     document.execCommand("copy");
     document.body.removeChild(t);
     $(".modal-copied").addClass("active");
+    Cookies.set("code", code, { expires: 1, secure: true });
+}
+
+function kakaoShare() {
+    $.post("proxy.php", { do: "copy", code: Cookies.get("code") }, function(response) {
+        var data = JSON.parse(response);
+        Kakao.Link.sendDefault({
+            objectType: "feed",
+            content: {
+                title: data["label"] + " [S-Assistant]",
+                description: data["description"],
+                imageUrl: "https://submit.hyunwoo.org/assets/submit.png",
+                link: {
+                    mobileWebUrl: server + Cookies.get("code"),
+                    webUrl: server + Cookies.get("code")
+                }
+            },
+            social: {
+                subscriberCount: data["submits"]
+            },
+            buttons: [
+                {
+                    title: "웹으로 보기",
+                    link: {
+                        mobileWebUrl: server + Cookies.get("code"),
+                        webUrl: server + Cookies.get("code")
+                    }
+                }
+            ]
+        });
+    });
 }
 
 function url(url) {
@@ -722,6 +705,9 @@ function initialize() {
                 $(".submit-subtitle").text(Cookies.get("fbName"));
                 Cookies.set("name", decodeURI(location.hash.slice(1)), { expires: 1, secure: true });
                 $(".submit-subtitle").text(Cookies.get("name"));
+                window.onbeforeunload = function() {
+                    return true;
+                };
             }
         }
         submitValidate();
@@ -780,6 +766,58 @@ function initialize() {
         });
     }
 }
+
+function statusChangeCallback(response) {
+    $(".pf-icon").css("visible", "hidden");
+    $(".pf-name").text("로드 중");
+    if (response.status === "connected") {
+        FB.api("/me", function(fb) {
+            Cookies.set("fbValid", true, { expires: 1, secure: true });
+            Cookies.set("fbId", fb.id, { expires: 1, secure: true });
+            Cookies.set("fbName", fb.name, { expires: 1, secure: true });
+            $.post("proxy.php", { do: "fbLogin", fbId: fb.id, fbName: fb.name });
+            initialize();
+        });
+    } else {
+        Cookies.remove("fbValid");
+        Cookies.remove("fbId");
+        Cookies.remove("fbName");
+        Cookies.remove("name");
+        Cookies.remove("ownerFbId");
+        Cookies.remove("dir");
+        Cookies.remove("code");
+        Cookies.remove("code_autoSet");
+        clearInterval(timer_consoleTable);
+        clearInterval(timer_explorer);
+        window.onbeforeunload = true;
+        initialize();
+    }
+}
+
+function checkLoginState() {
+    FB.getLoginStatus(function(response) {
+        statusChangeCallback(response);
+    });
+}
+
+window.fbAsyncInit = function() {
+    FB.init({
+        appId: "2157685250910459",
+        cookie: true,
+        xfbml: true,
+        version: "v3.2"
+    });
+    FB.AppEvents.logPageView();
+};
+(function(d, s, id) {
+    var js,
+        fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s);
+    js.id = id;
+    js.src = "https://connect.facebook.net/ko_KR/sdk.js#xfbml=1&version=v3.2&appId=2157685250910459&autoLogAppEvents=1";
+    fjs.parentNode.insertBefore(js, fjs);
+})(document, "script", "facebook-jssdk");
 
 $(window).load(function() {
     initialize();
