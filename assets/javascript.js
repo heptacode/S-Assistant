@@ -53,6 +53,7 @@ $(function() {
     $(".board").click(function() {
         boardTable();
         timer_boardTable = setInterval(boardTable, 1000);
+        $(".board-wrap").addClass("board-wrap-active");
         $(".board")
             .html("읽어들이는 중")
             .addClass("board-active");
@@ -60,6 +61,7 @@ $(function() {
     $(".btn-board-close").click(function() {
         $(this).fadeOut();
         clearInterval(timer_boardTable);
+        $(".board-wrap").removeClass("board-wrap-active");
         $(".board")
             .html('<div class="board-default"><div class="board-icon"></div><div>보드</div></div>')
             .removeClass("board-active");
