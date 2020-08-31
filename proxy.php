@@ -5,7 +5,7 @@
 // }
 date_default_timezone_set('KST');
 $connect = mysqli_connect('localhost:3307', 'submit', 'AccountForSubmit', 'submit') or exit(false);
-$sever = 'https://submit.hyunwoo.org/';
+$sever = 'https://assistant.hyunwoo.dev/';
 $ds = DIRECTORY_SEPARATOR;
 
 /*
