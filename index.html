@@ -1,261 +1,306 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-        <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1" />
-        <title>S-Assistant | HYUNWOO.ORG</title>
-        <link rel="icon" href="assets/submit.svg" />
-        <link rel="shortcut icon" href="assets/submit.svg" />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/font-nanumsquare/1.0.0/nanumsquare.css?ver=4.9.8" />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-ui@1.12.1/themes/base/all.css" />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dropzone@latest/dist/dropzone.min.css" />
-        <link rel="stylesheet" href="assets/style.css" />
-        <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/jquery-ui@latest/ui/widget.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/dropzone@latest/dist/dropzone.min.js" defer></script>
-        <script src="https://cdn.jsdelivr.net/npm/js-cookie@latest/src/js.cookie.min.js"></script>
-        <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
-        <script src="assets/javascript.js"></script>
-        <script src="https://gist.githubusercontent.com/heptacode/0bb1048e10d429207cf00284f424d63b/raw/4c3d85a7b12e6aa1583557ed51570b30fdc1401e/disable.js"></script>
-        <div id="fb-root"></div>
-    </head>
-    <body>
-        <div class="notice-offline">인터넷 연결 끊김</div>
-        <div class="notice-online">인터넷 다시 연결됨</div>
-        <div class="loader-wrap"><div class="loader"></div></div>
-        <div class="site-name">
-            <div></div>
-            S-Assistant
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1" />
+    <title>S-Assistant</title>
+    <link rel="icon" href="assets/submit.svg" />
+    <link rel="shortcut icon" href="assets/submit.svg" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/font-nanumsquare/1.0.0/nanumsquare.css?ver=4.9.8" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-ui@1.12.1/themes/base/datepicker.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dropzone@latest/dist/dropzone.min.css" />
+    <link rel="stylesheet" href="assets/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-ui@1.12.1/ui/widgets/datepicker.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dropzone@latest/dist/dropzone.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@latest/src/js.cookie.min.js"></script>
+    <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+    <script src="assets/javascript.js"></script>
+    <script src="https://gist.githubusercontent.com/heptacode/0bb1048e10d429207cf00284f424d63b/raw/4c3d85a7b12e6aa1583557ed51570b30fdc1401e/disable.js"></script>
+    <div id="fb-root"></div>
+  </head>
+  <body>
+    <div class="notice-offline">인터넷 연결 끊김</div>
+    <div class="notice-online">인터넷 다시 연결됨</div>
+    <div class="loader-wrap"><div class="loader"></div></div>
+    <div class="site-name">
+      <div></div>
+      S-Assistant
+    </div>
+    <div class="btn-close">&times;</div>
+    <div id="content" class="hidden">
+      <header>
+        <div class="pf-container">
+          <div class="pf-icon"></div>
+          <div class="pf-name"></div>
+          <div
+            class="fb-login-button"
+            scope="public_profile"
+            data-max-rows="1"
+            data-size="medium"
+            data-button-type="login_with"
+            data-show-faces="false"
+            data-auto-logout-link="true"
+            data-use-continue-as="false"
+            onlogin="checkLoginState()"
+          ></div>
         </div>
-        <div class="btn-close">&times;</div>
-        <div id="content" class="hidden">
-            <header>
-                <div class="pf-container">
-                    <div class="pf-icon"></div>
-                    <div class="pf-name"></div>
-                    <div class="fb-login-button" scope="public_profile" data-max-rows="1" data-size="medium" data-button-type="login_with" data-show-faces="false" data-auto-logout-link="true" data-use-continue-as="false" onlogin="checkLoginState()"></div>
-                </div>
-            </header>
-            <main>
-                <div class="board-wrap">
-                    <button class="btn-board-close" type="button">완료</button>
-                    <div class="board">
-                        <div class="board-default">
-                            <div class="board-icon"></div>
-                            <div>보드</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="notice-main notice-main-nameRequired">해당 폼에 제출하려면 아래 필드를 채우거나 Facebook 계정으로 로그인하여 주십시오.</div>
-                <div class="field">
-                    <div class="signIn-container">
-                        <div class="group">
-                            <div class="notice-inputError">필드에 입력 오류가 있습니다.</div>
-                            <div class="input-group">
-                                <input type="text" id="input-name" placeholder="성명" maxlength="10" autocomplete="off" required /> <label for="input-name">성명</label>
-                                <div class="bar"></div>
-                            </div>
-                            <div class="input-group">
-                                <input type="text" id="input-code" placeholder="제출코드" maxlength="32" pattern="[a-zA-Z0-9]+" autocomplete="off" required /> <label for="input-code">제출코드</label>
-                                <div class="bar"></div>
-                            </div>
-                        </div>
-                        <button class="btn-signIn" type="button">승인</button>
-                        <div class="load-signIn"></div>
-                    </div>
-
-                    <div class="console-container">
-                        <div class="console-load">읽어들이는 중</div>
-                        <div class="console-title">관리 콘솔 <button class="btn-explorer" type="button">탐색기 열기</button></div>
-                        <div class="create-container">
-                            <div class="desc-create">새로운 폼 생성</div>
-                            <button class="btn-create" type="button">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="50px" height="50px" viewBox="0 0 50 50"><path fill="#000" d="M 25 2 C 12.309295 2 2 12.309295 2 25 C 2 37.690705 12.309295 48 25 48 C 37.690705 48 48 37.690705 48 25 C 48 12.309295 37.690705 2 25 2 z M 25 4 C 36.609824 4 46 13.390176 46 25 C 46 36.609824 36.609824 46 25 46 C 13.390176 46 4 36.609824 4 25 C 4 13.390176 13.390176 4 25 4 z M 24 13 L 24 24 L 13 24 L 13 26 L 24 26 L 24 37 L 26 37 L 26 26 L 37 26 L 37 24 L 26 24 L 26 13 L 24 13 z" /></svg>
-                            </button>
-                        </div>
-                        <div class="console-table">
-                            <div class="console-loader-wrap"><div class="loader"></div></div>
-                            데이터를 읽어들이는 중
-                        </div>
-                        <p class="site-info">S-Assistant</p>
-                    </div>
-                </div>
-
-                <section class="submit">
-                    <header>
-                        <div class="submit-title">S-Assistant</div>
-                        <div class="submit-subtitle">로드 중</div>
-                    </header>
-                    <form class="dropzone" action="proxy.php" method="post" enctype="multipart/form-data">
-                        <div class="fallback"><input name="file" type="file" multiple /> <input type="submit" value="업로드" /></div>
-                    </form>
-                    <div class="notice-submit notice-submit-fbRequired">이 폼에 제출하려면 Facebook으로 로그인하여야 합니다.</div>
-                    <div class="notice-submit notice-submit-beforePost">이 폼은 게시 준비 중입니다.</div>
-                    <div class="notice-submit notice-submit-expired">제출 기한이 만료되었습니다.</div>
-                    <div class="notice-submit notice-submit-maxLimit">최대 제출 수에 도달하여 더 이상 이 폼에 제출할 수 없습니다.</div>
-                    <div class="notice-submit notice-submit-unavailable">지금은 이 폼에 제출할 수 없습니다.</div>
-                </section>
-
-                <section class="explorer">
-                    <header>
-                        <div class="explorer-title">S-Assistant</div>
-                        <button class="btn-root" type="button">최상위 폴더로 이동</button> <button class="btn-console" type="button">콘솔 열기</button>
-                        <div class="explorer-btn-group"><button class="btn-add" type="button">추가 업로드</button><button class="btn-zip" type="button">일괄 다운로드</button></div>
-                    </header>
-                    <div class="explorer-container"><div class="explorer-content"></div></div>
-                </section>
-
-                <section class="modal">
-                    <div class="modal-create">
-                        <div class="modal-content modal-create-content">
-                            <div class="modal-tab modal-tab-create">
-                                <button class="btn-modal-close btn-modal-create-close" type="button"></button>
-                                <div class="modal-title">새로운 폼 생성</div>
-                                <div class="modal-subtitle">S-Assistant</div>
-                                <button class="btn-save btn-create-save">만들기</button>
-                            </div>
-                            <form class="modal-form modal-form-create" method="post">
-                                <section>
-                                    <small>기본 설정</small>
-                                    <div class="form-row-1st"></div>
-                                    <div class="form-row"><label class="create-label-label" for="create-label">레이블</label> <input type="text" id="create-label" placeholder="레이블" maxlength="20" required /></div>
-                                    <div class="form-row"><label class="create-label-description" for="create-description">설명</label> <textarea id="create-description" placeholder="설명 (선택 사항)" rows="2" maxlength="100"></textarea></div>
-                                    <div class="form-row"><label class="create-label-max" for="create-max">최대 제출 수</label> <input type="tel" id="create-max" placeholder="최대 제출 수" maxlength="4" pattern="[0-9]+" required /></div>
-                                    <div class="form-row">
-                                        <label for="create-checkbox-public">보드 노출</label>
-                                        <div class="switch-container">
-                                            <label> <input type="checkbox" id="create-checkbox-public" /> <span class="switch"></span> </label>
-                                        </div>
-                                    </div>
-                                    <div class="form-row form-row-switch">
-                                        <label class="create-label-postNow" for="create-checkbox-postNow">즉시 게시</label>
-                                        <div class="switch-container">
-                                            <label> <input type="checkbox" id="create-checkbox-postNow" checked="checked" /> <span class="switch"></span> </label>
-                                        </div>
-                                    </div>
-                                    <div class="form-row form-row-reserve form-row-create-post">
-                                        <label class="create-label-post" for="create-post-date">예약 게시</label>
-                                        <div class="datetime-container"><input type="text" id="create-post-date" class="datepicker" value="0000-00-00" readonly /> <input type="time" id="create-post-time" value="00:00" /></div>
-                                    </div>
-                                    <div class="form-row">
-                                        <label for="create-checkbox-unlimited">무기한 공개</label>
-                                        <div class="switch-container">
-                                            <label> <input type="checkbox" id="create-checkbox-unlimited" checked="checked" /> <span class="switch"></span> </label>
-                                        </div>
-                                    </div>
-                                    <div class="form-row form-row-reserve form-row-create-deadline">
-                                        <label class="create-label-deadline" for="create-deadline-date">마감</label>
-                                        <div class="datetime-container"><input type="text" id="create-deadline-date" class="datepicker" value="0000-00-00" readonly /> <input type="time" id="create-deadline-time" value="00:00" /></div>
-                                    </div>
-                                    <div class="form-row">
-                                        <label for="create-checkbox-afterDeadline">마감 후 제출 허용</label>
-                                        <div class="switch-container">
-                                            <label> <input type="checkbox" id="create-checkbox-afterDeadline" /> <span class="switch"></span> </label>
-                                        </div>
-                                    </div>
-                                    <div class="form-row">
-                                        <label for="create-checkbox-useFb">Facebook 인증</label>
-                                        <div class="switch-container">
-                                            <label> <input type="checkbox" id="create-checkbox-useFb" /> <span class="switch"></span> </label>
-                                        </div>
-                                    </div>
-                                    <small>Facebook 인증을 활성화하기 전에 모든 사용자가 Facebook 계정을 보유하고 있는지 확인하십시오.</small>
-                                </section>
-                                <section>
-                                    <small>코드 설정</small>
-                                    <div class="form-row-1st"></div>
-                                    <div class="form-row">
-                                        <label for="create-slider-codelvl">코드 복잡도</label> <input type="range" id="create-slider-codelvl" class="slider" value="6" min="6" max="30" step="4" />
-                                        <div class="preview-codelvl create-preview-codelvl"></div>
-                                    </div>
-                                    <div class="form-row">
-                                        <label>코드 미리보기</label> <input class="preview-code create-preview-code" type="text" readonly />
-                                        <div class="load-code"></div>
-                                        <input type="hidden" id="create-code" />
-                                    </div>
-                                    <small>코드 레벨을 높게 설정할수록 무차별 대입 공격 등으로 폼을 찾기가 더 어려워집니다.</small>
-                                </section>
-                                <button class="code-reissue" type="button">코드 재설정</button>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="modal-modify">
-                        <div class="modal-content modal-modify-content">
-                            <div class="modal-tab modal-tab-modify">
-                                <button class="btn-modal-close btn-modal-modify-close" type="button"></button>
-                                <div class="modal-title">폼 관리 | <span class="modal-form-modify-title-label"></span></div>
-                                <div class="modal-subtitle">S-Assistant</div>
-                                <button class="btn-save btn-modify-save">저장</button>
-                            </div>
-                            <form class="modal-form modal-form-modify" method="post">
-                                <section>
-                                    <small>기본 설정</small>
-                                    <div class="form-row-1st"></div>
-                                    <div class="form-row"><label class="modify-label-label" for="modify-label">레이블</label> <input type="text" id="modify-label" placeholder="레이블" maxlength="20" required /></div>
-                                    <div class="form-row"><label class="modify-label-description" for="modify-description">설명</label> <textarea id="modify-description" placeholder="설명 (선택 사항)" rows="2" maxlength="100"></textarea></div>
-                                    <div class="form-row"><label class="modify-label-max" for="modify-max">최대 제출 수</label> <input type="tel" id="modify-max" placeholder="최대 제출 수" maxlength="4" pattern="[0-9]+" required /></div>
-                                    <div class="form-row">
-                                        <label for="modify-checkbox-public">보드 노출</label>
-                                        <div class="switch-container">
-                                            <label> <input type="checkbox" id="modify-checkbox-public" /> <span class="switch"></span> </label>
-                                        </div>
-                                    </div>
-                                    <div class="form-row form-row-switch">
-                                        <label for="modify-checkbox-postNow">즉시 게시</label>
-                                        <div class="switch-container">
-                                            <label> <input type="checkbox" id="modify-checkbox-postNow" /> <span class="switch"></span> </label>
-                                        </div>
-                                    </div>
-                                    <div class="form-row form-row-reserve form-row-modify-post">
-                                        <label class="modify-label-post" for="modify-post-date">예약 게시</label>
-                                        <div class="datetime-container"><input type="text" id="modify-post-date" class="datepicker" readonly /> <input type="time" id="modify-post-time" value="00:00" /></div>
-                                    </div>
-                                    <div class="form-row">
-                                        <label for="modify-checkbox-unlimited">무기한 공개</label>
-                                        <div class="switch-container">
-                                            <label> <input type="checkbox" id="modify-checkbox-unlimited" /> <span class="switch"></span> </label>
-                                        </div>
-                                    </div>
-                                    <div class="form-row form-row-reserve form-row-modify-deadline">
-                                        <label class="modify-label-deadline" for="modify-deadline-date">마감</label>
-                                        <div class="datetime-container"><input type="text" id="modify-deadline-date" class="datepicker" readonly /> <input type="time" id="modify-deadline-time" value="00:00" /></div>
-                                    </div>
-                                    <div class="form-row">
-                                        <label for="modify-checkbox-afterDeadline">마감 후 제출 허용</label>
-                                        <div class="switch-container">
-                                            <label> <input type="checkbox" id="modify-checkbox-afterDeadline" /> <span class="switch"></span> </label>
-                                        </div>
-                                    </div>
-                                    <div class="form-row">
-                                        <label for="modify-checkbox-useFb">Facebook 인증</label>
-                                        <div class="switch-container">
-                                            <label> <input type="checkbox" id="modify-checkbox-useFb" /> <span class="switch"></span> </label>
-                                        </div>
-                                    </div>
-                                    <small>Facebook 인증을 활성화하기 전에 모든 사용자가 Facebook 계정을 보유하고 있는지 확인하십시오.</small>
-                                </section>
-                                <section>
-                                    <small>코드 설정</small>
-                                    <div class="form-row-1st"></div>
-                                    <div class="form-row"><label>코드</label> <input class="preview-code modify-preview-code" type="text" readonly /></div>
-                                    <small>코드는 변경이 불가능합니다.</small>
-                                </section>
-                                <button class="form-remove" type="button">폼 삭제</button>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="modal-copied">
-                        <div>
-                            클립보드에 복사되었습니다! <button class="btn-modal-copied-close" type="button">닫기</button> <button class="btn-kakao-link" onclick="kakaoShare()" type="button"><span></span>카카오톡으로 링크 공유</button>
-                        </div>
-                    </div>
-                </section>
-            </main>
+      </header>
+      <main>
+        <div class="board-wrap">
+          <button class="btn-board-close" type="button">완료</button>
+          <div class="board">
+            <div class="board-default">
+              <div class="board-icon"></div>
+              <div>보드</div>
+            </div>
+          </div>
         </div>
-    </body>
+        <div class="notice-main notice-main-nameRequired">해당 폼에 제출하려면 아래 필드를 채우거나 Facebook 계정으로 로그인하여 주십시오.</div>
+        <div class="field">
+          <div class="signIn-container">
+            <div class="group">
+              <div class="notice-inputError">필드에 입력 오류가 있습니다.</div>
+              <div class="input-group">
+                <input type="text" id="input-name" placeholder="성명" maxlength="10" autocomplete="off" required /> <label for="input-name">성명</label>
+                <div class="bar"></div>
+              </div>
+              <div class="input-group">
+                <input type="text" id="input-code" placeholder="제출코드" maxlength="32" pattern="[a-zA-Z0-9]+" autocomplete="off" required /> <label for="input-code">제출코드</label>
+                <div class="bar"></div>
+              </div>
+            </div>
+            <button class="btn-signIn" type="button">승인</button>
+            <div class="load-signIn"></div>
+          </div>
+
+          <div class="console-container">
+            <div class="console-load">읽어들이는 중</div>
+            <div class="console-title">관리 콘솔 <button class="btn-explorer" type="button">탐색기 열기</button></div>
+            <div class="create-container">
+              <div class="desc-create">새로운 폼 생성</div>
+              <button class="btn-create" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="50px" height="50px" viewBox="0 0 50 50">
+                  <path
+                    fill="#000"
+                    d="M 25 2 C 12.309295 2 2 12.309295 2 25 C 2 37.690705 12.309295 48 25 48 C 37.690705 48 48 37.690705 48 25 C 48 12.309295 37.690705 2 25 2 z M 25 4 C 36.609824 4 46 13.390176 46 25 C 46 36.609824 36.609824 46 25 46 C 13.390176 46 4 36.609824 4 25 C 4 13.390176 13.390176 4 25 4 z M 24 13 L 24 24 L 13 24 L 13 26 L 24 26 L 24 37 L 26 37 L 26 26 L 37 26 L 37 24 L 26 24 L 26 13 L 24 13 z"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div class="console-table">
+              <div class="console-loader-wrap"><div class="loader"></div></div>
+              데이터를 읽어들이는 중
+            </div>
+            <p class="site-info">S-Assistant</p>
+          </div>
+        </div>
+
+        <section class="submit">
+          <header>
+            <div class="submit-title">S-Assistant</div>
+            <div class="submit-subtitle">로드 중</div>
+          </header>
+          <form class="dropzone" action="proxy.php" method="post" enctype="multipart/form-data">
+            <div class="fallback"><input name="file" type="file" multiple /> <input type="submit" value="업로드" /></div>
+          </form>
+          <div class="notice-submit notice-submit-fbRequired">이 폼에 제출하려면 Facebook으로 로그인하여야 합니다.</div>
+          <div class="notice-submit notice-submit-beforePost">이 폼은 게시 준비 중입니다.</div>
+          <div class="notice-submit notice-submit-expired">제출 기한이 만료되었습니다.</div>
+          <div class="notice-submit notice-submit-maxLimit">최대 제출 수에 도달하여 더 이상 이 폼에 제출할 수 없습니다.</div>
+          <div class="notice-submit notice-submit-unavailable">지금은 이 폼에 제출할 수 없습니다.</div>
+        </section>
+
+        <section class="explorer">
+          <header>
+            <div class="explorer-title">S-Assistant</div>
+            <button class="btn-root" type="button">최상위 폴더로 이동</button> <button class="btn-console" type="button">콘솔 열기</button>
+            <div class="explorer-btn-group"><button class="btn-add" type="button">추가 업로드</button><button class="btn-zip" type="button">일괄 다운로드</button></div>
+          </header>
+          <div class="explorer-container"><div class="explorer-content"></div></div>
+        </section>
+
+        <section class="modal">
+          <div class="modal-create">
+            <div class="modal-content modal-create-content">
+              <div class="modal-tab modal-tab-create">
+                <button class="btn-modal-close btn-modal-create-close" type="button"></button>
+                <div class="modal-title">새로운 폼 생성</div>
+                <div class="modal-subtitle">S-Assistant</div>
+                <button class="btn-save btn-create-save">만들기</button>
+              </div>
+              <form class="modal-form modal-form-create" method="post">
+                <section>
+                  <small>기본 설정</small>
+                  <div class="form-row-1st"></div>
+                  <div class="form-row"><label class="create-label-label" for="create-label">레이블</label> <input type="text" id="create-label" placeholder="레이블" maxlength="20" required /></div>
+                  <div class="form-row">
+                    <label class="create-label-description" for="create-description">설명</label> <textarea id="create-description" placeholder="설명 (선택 사항)" rows="2" maxlength="100"></textarea>
+                  </div>
+                  <div class="form-row">
+                    <label class="create-label-max" for="create-max">최대 제출 수</label> <input type="tel" id="create-max" placeholder="최대 제출 수" maxlength="4" pattern="[0-9]+" required />
+                  </div>
+                  <div class="form-row">
+                    <label for="create-checkbox-public">보드 노출</label>
+                    <div class="switch-container">
+                      <label> <input type="checkbox" id="create-checkbox-public" /> <span class="switch"></span> </label>
+                    </div>
+                  </div>
+                  <div class="form-row form-row-switch">
+                    <label class="create-label-postNow" for="create-checkbox-postNow">즉시 게시</label>
+                    <div class="switch-container">
+                      <label> <input type="checkbox" id="create-checkbox-postNow" checked="checked" /> <span class="switch"></span> </label>
+                    </div>
+                  </div>
+                  <div class="form-row form-row-reserve form-row-create-post">
+                    <label class="create-label-post" for="create-post-date">예약 게시</label>
+                    <div class="datetime-container">
+                      <input type="text" id="create-post-date" class="datepicker" value="0000-00-00" readonly /> <input type="time" id="create-post-time" value="00:00" />
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <label for="create-checkbox-unlimited">무기한 공개</label>
+                    <div class="switch-container">
+                      <label> <input type="checkbox" id="create-checkbox-unlimited" checked="checked" /> <span class="switch"></span> </label>
+                    </div>
+                  </div>
+                  <div class="form-row form-row-reserve form-row-create-deadline">
+                    <label class="create-label-deadline" for="create-deadline-date">마감</label>
+                    <div class="datetime-container">
+                      <input type="text" id="create-deadline-date" class="datepicker" value="0000-00-00" readonly /> <input type="time" id="create-deadline-time" value="00:00" />
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <label for="create-checkbox-afterDeadline">마감 후 제출 허용</label>
+                    <div class="switch-container">
+                      <label> <input type="checkbox" id="create-checkbox-afterDeadline" /> <span class="switch"></span> </label>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <label for="create-checkbox-useFb">Facebook 인증</label>
+                    <div class="switch-container">
+                      <label> <input type="checkbox" id="create-checkbox-useFb" /> <span class="switch"></span> </label>
+                    </div>
+                  </div>
+                  <small>Facebook 인증을 활성화하기 전에 모든 사용자가 Facebook 계정을 보유하고 있는지 확인하십시오.</small>
+                </section>
+                <section>
+                  <small>코드 설정</small>
+                  <div class="form-row-1st"></div>
+                  <div class="form-row">
+                    <label for="create-slider-codelvl">코드 복잡도</label> <input type="range" id="create-slider-codelvl" class="slider" value="6" min="6" max="30" step="4" />
+                    <div class="preview-codelvl create-preview-codelvl"></div>
+                  </div>
+                  <div class="form-row">
+                    <label>코드 미리보기</label> <input class="preview-code create-preview-code" type="text" readonly />
+                    <div class="load-code"></div>
+                    <input type="hidden" id="create-code" />
+                  </div>
+                  <small>코드 레벨을 높게 설정할수록 무차별 대입 공격 등으로 폼을 찾기가 더 어려워집니다.</small>
+                </section>
+                <button class="code-reissue" type="button">코드 재설정</button>
+              </form>
+            </div>
+          </div>
+          <div class="modal-modify">
+            <div class="modal-content modal-modify-content">
+              <div class="modal-tab modal-tab-modify">
+                <button class="btn-modal-close btn-modal-modify-close" type="button"></button>
+                <div class="modal-title">폼 관리 | <span class="modal-form-modify-title-label"></span></div>
+                <div class="modal-subtitle">S-Assistant</div>
+                <button class="btn-save btn-modify-save">저장</button>
+              </div>
+              <form class="modal-form modal-form-modify" method="post">
+                <section>
+                  <small>기본 설정</small>
+                  <div class="form-row-1st"></div>
+                  <div class="form-row"><label class="modify-label-label" for="modify-label">레이블</label> <input type="text" id="modify-label" placeholder="레이블" maxlength="20" required /></div>
+                  <div class="form-row">
+                    <label class="modify-label-description" for="modify-description">설명</label> <textarea id="modify-description" placeholder="설명 (선택 사항)" rows="2" maxlength="100"></textarea>
+                  </div>
+                  <div class="form-row">
+                    <label class="modify-label-max" for="modify-max">최대 제출 수</label> <input type="tel" id="modify-max" placeholder="최대 제출 수" maxlength="4" pattern="[0-9]+" required />
+                  </div>
+                  <div class="form-row">
+                    <label for="modify-checkbox-public">보드 노출</label>
+                    <div class="switch-container">
+                      <label> <input type="checkbox" id="modify-checkbox-public" /> <span class="switch"></span> </label>
+                    </div>
+                  </div>
+                  <div class="form-row form-row-switch">
+                    <label for="modify-checkbox-postNow">즉시 게시</label>
+                    <div class="switch-container">
+                      <label> <input type="checkbox" id="modify-checkbox-postNow" /> <span class="switch"></span> </label>
+                    </div>
+                  </div>
+                  <div class="form-row form-row-reserve form-row-modify-post">
+                    <label class="modify-label-post" for="modify-post-date">예약 게시</label>
+                    <div class="datetime-container"><input type="text" id="modify-post-date" class="datepicker" readonly /> <input type="time" id="modify-post-time" value="00:00" /></div>
+                  </div>
+                  <div class="form-row">
+                    <label for="modify-checkbox-unlimited">무기한 공개</label>
+                    <div class="switch-container">
+                      <label> <input type="checkbox" id="modify-checkbox-unlimited" /> <span class="switch"></span> </label>
+                    </div>
+                  </div>
+                  <div class="form-row form-row-reserve form-row-modify-deadline">
+                    <label class="modify-label-deadline" for="modify-deadline-date">마감</label>
+                    <div class="datetime-container"><input type="text" id="modify-deadline-date" class="datepicker" readonly /> <input type="time" id="modify-deadline-time" value="00:00" /></div>
+                  </div>
+                  <div class="form-row">
+                    <label for="modify-checkbox-afterDeadline">마감 후 제출 허용</label>
+                    <div class="switch-container">
+                      <label> <input type="checkbox" id="modify-checkbox-afterDeadline" /> <span class="switch"></span> </label>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <label for="modify-checkbox-useFb">Facebook 인증</label>
+                    <div class="switch-container">
+                      <label> <input type="checkbox" id="modify-checkbox-useFb" /> <span class="switch"></span> </label>
+                    </div>
+                  </div>
+                  <small>Facebook 인증을 활성화하기 전에 모든 사용자가 Facebook 계정을 보유하고 있는지 확인하십시오.</small>
+                </section>
+                <section>
+                  <small>코드 설정</small>
+                  <div class="form-row-1st"></div>
+                  <div class="form-row"><label>코드</label> <input class="preview-code modify-preview-code" type="text" readonly /></div>
+                  <small>코드는 변경이 불가능합니다.</small>
+                </section>
+                <button class="form-remove" type="button">폼 삭제</button>
+              </form>
+            </div>
+          </div>
+          <div class="modal-copied">
+            <div>
+              클립보드에 복사되었습니다! <button class="btn-modal-copied-close" type="button">닫기</button>
+              <button class="btn-kakao-link" onclick="kakaoShare()" type="button"><span></span>카카오톡으로 링크 공유</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
 </html>
 <noscript
-    ><meta http-equiv="refresh" content="0;url=./" />
-    <div style="display:-webkit-flex;display:flex;align-items:center;justify-content:center;position:fixed;width:100%;height:100%;top:0;left:0;background:#E9779E;color:white;z-index:1000"><h1>S-Assistant 구동을 위해서는 JavaScript 가 필요합니다.</h1></div></noscript
+  ><meta http-equiv="refresh" content="0;url=./" />
+  <div
+    style="
+      display: -webkit-flex;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background: #e9779e;
+      color: white;
+      z-index: 1000;
+    "
+  >
+    <h1>S-Assistant 구동을 위해서는 JavaScript 가 필요합니다.</h1>
+  </div></noscript
 >
