@@ -4,7 +4,7 @@
 //     exit('<meta http-equiv="refresh" content="0;url=/">');
 // }
 date_default_timezone_set('KST');
-$connect = mysqli_connect('localhost:3307', 'submit', 'AccountForSubmit', 'submit') or exit(false);
+$connect = mysqli_connect('localhost', 'query', 'AccountForQuery', 'submit') or exit(false);
 $sever = 'https://assistant.hyunwoo.dev/';
 $ds = DIRECTORY_SEPARATOR;
 
