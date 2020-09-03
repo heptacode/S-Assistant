@@ -1,4 +1,4 @@
-<?
+<?php
 // if (!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
 //     header('HTTP/1.0 403 Forbidden');
 //     exit('<meta http-equiv="refresh" content="0;url=/">');
