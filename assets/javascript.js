@@ -1,7 +1,7 @@
 /*
     INITIALIZE
 */
-Kakao.init("ec48fd8de0b2f961132ac08adae7f18c");
+Kakao.init("a07a75a6cf9e924215767390c1558ee2");
 $.ajaxSetup({ cache: false });
 $.datepicker.setDefaults({
   dateFormat: "yy-mm-dd",
